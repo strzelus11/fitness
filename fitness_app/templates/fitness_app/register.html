@@ -1,5 +1,4 @@
-{% extends "fitness_app/layout.html" %} {% block title %} Register {% endblock %} 
-{% block body %}
+{% extends "fitness_app/layout.html" %} {% block title %} Register {% endblock %} {% block body %}
 <form
 	action="{% url 'register' %}"
 	method="post"
@@ -34,8 +33,6 @@
 		<input
 			type="tel"
 			class="form-control"
-			placeholder="XXX-XXX-XXX"
-			pattern="[0-9]{3}-[0-9]{3}-[0-9]{3}"
 			id="number"
 			name="number"
 		/>
@@ -151,130 +148,157 @@
 		</div>
 	</div>
 	<div class="col-12">
-		<button type="submit" class="btn btn-primary">Sign in</button>
+		<button type="submit" id="submit-btn" class="btn btn-primary">
+			Sign in
+		</button>
 	</div>
 </form>
 <script>
-    $(document).ready(function () {
-	// Add event listeners to the form fields
-	$("#name").on("input", validateName);
-	$("#surname").on("input", validateSurname);
-	$("#number").on("input", validateNumber);
-	$("#email").on("input", validateEmail);
-	$("#password").on("input", validatePassword);
-	$("#password2").on("input", validatePassword2);
-	$("#height").on("input", validateHeight);
-    $("#weight").on("input", validateWeight);
-    $("#sex").on("change", validateSex);
+	$(document).ready(function () {
+		$("#submit-btn").attr("disabled", true);
+		let validName = false;
+		let validSurname = false;
+		let validNumber = false;
+		let validEmail = false;
+		let validPassword = false;
+		let validPassword2 = false;
+		let validHeight = false;
+		let validWeight = false;
+		let validSex = false;
 
-	function validateName() {
-		let name = $("#name").val();
-		if (name.length < 2) {
-			$("#error-name")
-				.text("Name should be at least 2 characters long.")
-				.css("color", "red");
-			$("#name").css("border", "3px solid red");
-		} else if (!/^[a-zA-Z]+$/.test(name)) {
-			$("#error-name")
-				.text("Name should only contain letters.")
-				.css("color", "red");
-			$("#name").css("border", "3px solid red");
-		} else {
-			$("#error-name").text("");
-			$("#name").css("border", "3px solid green");
-		}
-	}
+		// Add event listeners to the form fields
+		$("#name").on("input", validateName);
+		$("#surname").on("input", validateSurname);
+		$("#number").on("input", validateNumber);
+		$("#email").on("input", validateEmail);
+		$("#password").on("input", validatePassword);
+		$("#password2").on("input", validatePassword2);
+		$("#height").on("input", validateHeight);
+		$("#weight").on("input", validateWeight);
+		$("#sex").on("change", validateSex);
 
-	function validateSurname() {
-		let surname = $("#surname").val();
-		if (surname.length < 2) {
-			$("#error-surname")
-				.text("Surname should be at least 2 characters long.")
-				.css("color", "red");
-			$("#surname").css("border", "3px solid red");
-		} else if (!/^[a-zA-Z]+$/.test(surname)) {
-			$("#error-surname")
-				.text("Surname should only contain letters.")
-				.css("color", "red");
-			$("#surname").css("border", "3px solid red");
-		} else {
-			$("#error-surname").text("");
-			$("#surname").css("border", "3px solid green");
+		function validateName() {
+			let name = $("#name").val();
+			if (name.length < 2) {
+				$("#error-name")
+					.text("Name should be at least 2 characters long.")
+					.css("color", "red");
+				$("#name").css("border", "3px solid red");
+			} else if (!/^[a-zA-Z]+$/.test(name)) {
+				$("#error-name")
+					.text("Name should only contain letters.")
+					.css("color", "red");
+				$("#name").css("border", "3px solid red");
+			} else {
+				$("#error-name").text("");
+				$("#name").css("border", "3px solid green");
+                validName = true;
+			}
 		}
-	}
 
-	function validateNumber() {
-		let number = $("#number").val();
-		if (!/^[0-9]{3}-[0-9]{3}-[0-9]{3}$/.test(number)) {
-			$("#error-number")
-				.text("Invalid phone number. Please use the format XXX-XXX-XXX.")
-				.css("color", "red");
-			$("#number").css("border", "3px solid red");
-		} else {
-			$("#error-number").text("");
-			$("#number").css("border", "3px solid green");
+		function validateSurname() {
+			let surname = $("#surname").val();
+			if (surname.length < 2) {
+				$("#error-surname")
+					.text("Surname should be at least 2 characters long.")
+					.css("color", "red");
+				$("#surname").css("border", "3px solid red");
+			} else if (!/^[a-zA-Z]+$/.test(surname)) {
+				$("#error-surname")
+					.text("Surname should only contain letters.")
+					.css("color", "red");
+				$("#surname").css("border", "3px solid red");
+			} else {
+				$("#error-surname").text("");
+				$("#surname").css("border", "3px solid green");
+                validSurname = true;
+			}
 		}
-	}
 
-	function validateEmail() {
-		let email = $("#email").val();
-		if (!/\S+@\S+\.\S+/.test(email)) {
-			$("#error-email").text("Invalid email address.").css("color", "red");
-			$("#email").css("border", "3px solid red");
-		} else {
-			$("#error-email").text("");
-			$("#email").css("border", "3px solid green");
+		function validateNumber() {
+			let number = $("#number").val();
+			if (!/^[0-9]{9}$/.test(number)) {
+				$("#error-number")
+					.text("Invalid phone number.")
+					.css("color", "red");
+				$("#number").css("border", "3px solid red");
+			} else {
+				$("#error-number").text("");
+				$("#number").css("border", "3px solid green");
+                validNumber = true;
+			}
 		}
-	}
 
-	function validatePassword() {
-		let password = $("#password").val();
-		if (password.length < 8) {
-			$("#error-password")
-				.text("Password should be at least 8 characters long.")
-				.css("color", "red");
-			$("#password").css("border", "3px solid red");
-		} else {
-			$("#error-password").text("");
-			$("#password").css("border", "3px solid green");
+		function validateEmail() {
+			let email = $("#email").val();
+			if (!/\S+@\S+\.\S+/.test(email)) {
+				$("#error-email").text("Invalid email address.").css("color", "red");
+				$("#email").css("border", "3px solid red");
+			} else {
+				$("#error-email").text("");
+				$("#email").css("border", "3px solid green");
+                validEmail = true;
+			}
 		}
-	}
 
-	function validatePassword2() {
-		let password = $("#password").val();
-		let password2 = $("#password2").val();
-		if (password !== password2) {
-			$("#error-password2").text("Passwords do not match.").css("color", "red");
-			$("#password2").css("border", "3px solid red");
-		} else {
-			$("#error-password2").text("");
-			$("#password2").css("border", "3px solid green");
+		function validatePassword() {
+			let password = $("#password").val();
+			if (password.length < 8) {
+				$("#error-password")
+					.text("Password should be at least 8 characters long.")
+					.css("color", "red");
+				$("#password").css("border", "3px solid red");
+			} else {
+				$("#error-password").text("");
+				$("#password").css("border", "3px solid green");
+                validPassword = true;
+			}
 		}
-	}
 
-	function validateHeight() {
-		let height = $("#height").val();
-		if (height < 0) {
-			$("#error-height").text("Height cannot be negative.").css("color", "red");
-			$("#height").css("border", "3px solid red");
-		} else {
-			$("#error-height").text("");
-			$("#height").css("border", "3px solid green");
+		function validatePassword2() {
+			let password = $("#password").val();
+			let password2 = $("#password2").val();
+			if (password !== password2) {
+				$("#error-password2")
+					.text("Passwords do not match.")
+					.css("color", "red");
+				$("#password2").css("border", "3px solid red");
+			} else {
+				$("#error-password2").text("");
+				$("#password2").css("border", "3px solid green");
+                validPassword2 = true;
+			}
 		}
-	}
 
-	function validateWeight() {
-		let weight = $("#weight").val();
-		if (weight < 0) {
-			$("#error-weight").text("Weight cannot be negative.").css("color", "red");
-			$("#weight").css("border", "3px solid red");
-		} else {
-			$("#error-weight").text("");
-			$("#weight").css("border", "3px solid green");
+		function validateHeight() {
+			let height = $("#height").val();
+			if (height < 0) {
+				$("#error-height")
+					.text("Height cannot be negative.")
+					.css("color", "red");
+				$("#height").css("border", "3px solid red");
+			} else {
+				$("#error-height").text("");
+				$("#height").css("border", "3px solid green");
+                validHeight = true;
+			}
 		}
-    }
-    
-    function validateSex() {
+
+		function validateWeight() {
+			let weight = $("#weight").val();
+			if (weight < 0) {
+				$("#error-weight")
+					.text("Weight cannot be negative.")
+					.css("color", "red");
+				$("#weight").css("border", "3px solid red");
+			} else {
+				$("#error-weight").text("");
+				$("#weight").css("border", "3px solid green");
+                validWeight = true;
+			}
+		}
+
+		function validateSex() {
 			let sex = $("#sex").val();
 			if (sex === "") {
 				$("#error-sex").text("Please select a sex.").css("color", "red");
@@ -282,25 +306,9 @@
 			} else {
 				$("#error-sex").text("");
 				$("#sex").css("border", "3px solid green");
+                validSex = true;
 			}
-    }
-    
-    if (
-			$("#error-name").text() ||
-			$("#error-surname").text() ||
-			$("#error-number").text() ||
-			$("#error-email").text() ||
-			$("#error-password").text() ||
-			$("#error-password2").text() ||
-			$("#error-height").text() ||
-			$("#error-weight").text() ||
-			$("#error-sex").text()
-		) {
-			$("#submit-btn").attr("disabled", true);
-		} else {
-			$("#submit-btn").attr("disabled", false);
 		}
-});
-
+	});
 </script>
 {% endblock %}

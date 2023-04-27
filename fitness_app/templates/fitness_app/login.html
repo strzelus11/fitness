@@ -1,0 +1,37 @@
+{% extends "fitness_app/layout.html" %} {% block title %} Log In {% endblock %} {% block body %} 
+{% if message %}
+<div class="alert alert-danger d-flex align-items-center justify-content-center" role="alert">
+	<svg class="bi flex-shrink-0 me-2 alert-img" role="img" aria-label="Danger:">
+		<use xlink:href="#exclamation-triangle-fill" />
+	</svg>
+	<div>{{ message }}</div>
+</div>
+{% endif %}
+<form action="{% url 'login' %}" method="post" class="mx-5">
+	{% csrf_token %}
+	<div class="col-md-4 mx-auto py-2">
+		<label for="username" class="form-label">Username</label>
+		<input
+			type="text"
+			class="form-control"
+			id="username"
+			name="username"
+            autofocus
+			required
+		/>
+	</div>
+	<div class="col-md-4 mx-auto py-2">
+		<label for="password" class="form-label">Password</label>
+		<input
+			type="password"
+			class="form-control"
+			id="password"
+			name="password"
+			required
+		/>
+	</div>
+	<div class="col-md-4 mx-auto text-center py-3">
+		<button type="submit" class="btn btn-primary">Log In</button>
+	</div>
+</form>
+{% endblock %}

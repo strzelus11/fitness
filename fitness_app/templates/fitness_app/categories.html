@@ -1,0 +1,15 @@
+{% extends "fitness_app/layout.html" %} {% block title %} Categories {% endblock %} {% block body %}
+<div class="row">
+	{% for category, count in category_counts.items %}
+	<div class="col-md-4 text-center">
+		<a href="{% url 'category' category|slugify %}">
+			<div class="card mb-4 shadow-sm">
+				<div class="card-body">
+					<h5 class="card-title">{{ category }} ({{ count }})</h5>
+				</div>
+			</div>
+		</a>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}

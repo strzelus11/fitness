@@ -1,0 +1,22 @@
+body {
+    font-family: 'Raleway', sans-serif;
+}
+
+.body {
+	margin: 2em 4em;
+}
+
+.alert-img {
+	width: 1.5em;
+}
+
+.alert {
+	height: 4em;
+}
+
+.btn-card-bottom {
+	position: absolute;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+}

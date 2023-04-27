@@ -1,0 +1,102 @@
+.body {
+	margin: 2em 4em;
+	font-family: "Raleway", sans-serif;
+	font-weight: 300;
+}
+
+.alert-img {
+	width: 1.5em;
+}
+
+.alert {
+	height: 4em;
+}
+
+.btn-card-bottom {
+	position: absolute;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+aside {
+	background-color: #f2f2f2;
+	border: 1px solid #ddd;
+	padding: 2rem;
+	margin-top: 1rem;
+	border-radius: 5px;
+	width: 30%;
+}
+
+aside li {
+	line-height: 2em;
+}
+
+article {
+	width: 60%;
+	margin-top: 3rem;
+}
+
+ol {
+	counter-reset: my-counter;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+ol li::before {
+	counter-increment: my-counter;
+	content: counter(my-counter);
+	color: gray;
+	font-size: 40px;
+	font-weight: bold;
+	margin-right: 20px;
+	line-height: 1em;
+}
+
+#load-more {
+	display: block;
+	width: 10em;
+	margin: 0 auto;
+}
+
+.title-link {
+	color: inherit;
+	text-decoration: none;
+	cursor: default;
+}
+
+.title-link:hover {
+	color: inherit;
+	text-decoration: none;
+}
+
+.scroll-to-top {
+	position: fixed;
+	z-index: 9999;
+	bottom: 20px;
+	right: 20px;
+	display: none;
+	padding: 10px 15px;
+	background-color: lightgray;
+	color: gray;
+    border: 1px solid gray;
+	border-radius: 100%;
+	text-align: center;
+	font-size: 20px;
+}
+
+.scroll-to-top:hover {
+	font-size: 25px;
+    color: gray;
+    text-decoration: none;
+}
+
+.category-link {
+    font-size: 1.5em;
+}
+
+/* Smooth scrolling effect */
+html {
+	scroll-behavior: smooth;
+}

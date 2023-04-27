@@ -1,0 +1,37 @@
+{% extends "fitness_app/layout.html" %} {% block title %} {{ recipe.title }} {% endblock %} 
+{% block body %}
+<div class="container-fluid">
+    <h1 class="px-5 text-center fw-bold">{{ recipe.title }}</h1>
+    <hr style="height:2px;border-width:0.5em;color:gray;background-color:gray;width:80%;margin:2em auto;">
+    <img src="{{ recipe.image }}" class="img-fluid img-thumbnail my-3" alt="...">
+    <div class="d-flex justify-content-between">
+        <aside>
+            <h2>Ingredients</h2>
+            <ul>
+                {% for ingredient in recipe.ingredients %}
+                    {% if ingredient %}
+                        <li>{{ ingredient }}</li>
+                    {% endif %}
+                    
+                {% endfor %}
+            </ul>
+        </aside>
+        <article>
+            <h2>Cooking instructions</h2>
+            <ol>
+                {% for paragraph in recipe.recipe %}
+                    {% if paragraph %}
+                        <li class="mb-3">{{ paragraph }}</li>
+                    {% endif %}
+                {% endfor %}
+            </ol>
+        </article>
+    </div>
+    <hr class="my-5">
+    <div class="d-flex justify-content-center">
+        {% for category in recipe.categories %}
+            <a href="{% url 'category' category|slugify %}" class="card-link mx-5 category-link">{{ category }}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

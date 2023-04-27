@@ -1,0 +1,31 @@
+{% extends "fitness_app/layout.html" %} {% block title %} Categories {% endblock %} {% block body %}
+<div class="row text-center" id="recipe-list">
+    <h2><strong>{{ category }} recipes</strong></h2>
+	{% for recipe in recipes %}
+	<div class="col-md-4 my-3 recipe">
+		<div class="card h-100">
+			<a
+				class="title-link"
+				href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+				><img src="{{ recipe.image }}" class="card-img-top" alt="..."
+			/></a>
+			<div class="card-body text-center" style="padding-bottom: 6em">
+				<a
+					class="title-link"
+					href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+					><h5 class="card-title fw-bold">{{ recipe.title }}</h5></a
+				>
+				{% for category in recipe.categories %}
+				<a href="{% url 'category' category|slugify %}" class="card-link">{{ category }}</a>
+				{% endfor %}
+				<a
+					href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+					class="btn btn-primary btn-card-bottom"
+					>View recipe</a
+				>
+			</div>
+		</div>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}

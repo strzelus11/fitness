@@ -1,0 +1,116 @@
+{% extends "fitness_app/layout.html" %} {% block title %} Register {% endblock %} {% block body %}
+<form action="{% url 'register' %}" method="post" class="row g-3 needs-validation" novalidate>
+    {% csrf_token %}
+	<div class="col-md-4">
+		<label for="name" class="form-label">First name</label>
+		<input type="text" class="form-control" id="name" name="firstName" required />
+        <p id="error-name"></p>
+	</div>
+	<div class="col-md-4">
+		<label for="surname" class="form-label">Last Name</label>
+		<input type="text" class="form-control" id="surname" name="lastName" required />
+        <p id="error-surname"></p>
+	</div>
+    <div class="col-md-3">
+		<label for="phoneNumber" class="form-label">Phone number</label>
+		<input type="tel" class="form-control" placeholder="XXX-XXX-XXX" pattern="[0-9]{3}-[0-9]{3}-[0-9]{3}" id="number" name="number"/>
+        <p id="error-number"></p>
+	</div>
+	<div class="col-md-6">
+		<label for="username" class="form-label">Username</label>
+		<div class="input-group has-validation">
+			<span class="input-group-text" id="inputGroupPrepend">@</span>
+			<input
+				type="text"
+				class="form-control"
+				id="username"
+				aria-describedby="inputGroupPrepend"
+                name="username"
+				required
+			/>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<label for="email" class="form-label">E-mail</label>
+		<input type="email" class="form-control" placeholder="example@gmail.com" id="email" name="email" required />
+        <p id="error-email"></p>
+	</div>
+	<div class="col-md-6">
+		<label for="password" class="form-label">Password</label>
+		<input type="password" class="form-control" id="password" name="password" required />
+        <p id="error-password"></p>
+	</div>
+	<div class="col-md-6">
+		<label for="password2" class="form-label">Repeat password</label>
+		<input type="password" class="form-control" id="password2" name="password2" required />
+        <p id="error-password2"></p>
+	</div>
+	<div class="col-md-3">
+		<label for="profileImage" class="form-label">Profile photo</label>
+		<input
+			class="form-control"
+			type="file"
+			id="profileImage"
+			accept="image/*"
+            name="image"
+		/>
+	</div>
+	<div class="col-md-3">
+		<label for="date" class="form-label">Date of birth</label>
+		<input class="form-control" type="date" id="date" name="date"/>
+	</div>
+	<div class="col-md-3">
+		<label for="height" class="form-label">Height (cm)</label>
+		<input class="form-control" type="number" min="0" placeholder="e.g. 180 (cm)" id="height" name="height">
+        <p id="error-height"></p>
+	</div>
+	<div class="col-md-3">
+		<label for="bodyWeight" class="form-label">Body-weight (kg)</label>
+		<input class="form-control" type="number" min="0" placeholder="e.g. 70 (kg)" id="weight" name="bodyWeight">
+        <p id="error-weight"></p>
+	</div>
+	<div class="col-md-6">
+        <label class="form-label">Sex</label>
+		<div class="form-check">
+			<input
+				class="form-check-input"
+                name="sex"
+				type="radio"
+				id="male"
+                value="male"
+			/>
+			<label class="form-check-label" for="male"> Male </label>
+		</div>
+		<div class="form-check">
+			<input
+				class="form-check-input"
+                name="sex"
+				type="radio"
+				id="female"
+                value="female"
+			/>
+			<label class="form-check-label" for="female"> Female </label>
+		</div>
+	</div>
+	<div class="col-12">
+		<button type="submit" class="btn btn-primary">Sign in</button>
+	</div>
+</form>
+<script>
+    $(document).ready(function() {
+        // disable submit button on page load
+        $("button[type='submit']").prop("disabled", true);
+
+        var inputs = $("input");
+
+        fields = []
+        errors = []
+
+        for (i = 0; i < inputs.length; i++) {
+            fields.append(inputs[i].id);
+            console.log(inputs[i].id);
+        }
+
+    });
+</script>
+{% endblock %}

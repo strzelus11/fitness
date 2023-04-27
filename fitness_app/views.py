@@ -154,7 +154,7 @@ def register(request):
             messages.error(request, e)
             return redirect('register')
 
-    return render(request, "fitness_app/register.html")
+    return render(request, "fitness_app/register.html", {"messages": messages.get_messages(request)})
 
 
 def login_view(request):

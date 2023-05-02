@@ -138,3 +138,8 @@ html {
 .card-index {
     width: 700px;
 }
+
+.error-messages {
+    color: red;
+    margin-left: 5em;
+}

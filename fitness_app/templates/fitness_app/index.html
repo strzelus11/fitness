@@ -171,13 +171,16 @@
 		Profile
 	</div>
 	<div
-		class="tab-pane fade border border-dark border-3 rounded p-3 mx-5"
+		class="tab-pane fade border border-secondary border-3 rounded p-3 mx-5"
 		id="nav-contact"
 		role="tabpanel"
 		aria-labelledby="nav-contact-tab"
 		tabindex="0"
 	>
-		<h3 class="mb-5">Your personal data:</h3>
+		<h3 class="mb-3">Your personal data:</h3>
+        <div class="alert alert-secondary" role="alert">
+            <strong>* Grayed out fields are non changeable</strong>
+        </div>
 		<div class="mb-3">
 			<label class="form-label">Email address</label>
 			<input
@@ -188,26 +191,42 @@
 				readonly
 			/>
 		</div>
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" value="{{ user.first_name }}" disabled readonly/>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Surname</label>
+            <input type="text" class="form-control" value="{{ user.last_name }}" disabled readonly/>
+        </div>
 		<div class="mb-3">
 			<label class="form-label">Username</label>
 			<input
 				type="username"
 				class="form-control"
-				id="exampleFormControlInput1"
+				id="username"
 				value="{{ user.username }}"
 			/>
 		</div>
 		<div class="mb-3">
 			<label class="form-label">Phone number</label>
-			<input type="tel" class="form-control" value="{{ user.phone_number }}" />
+			<input type="tel" id="number" class="form-control" value="{{ user.phone_number }}" />
+		</div>
+        <div class="mb-3">
+			<label class="form-label">Age</label>
+			<input type="number" class="form-control" value="{{ age }}" disabled readonly/>
 		</div>
 		<div class="mb-3">
 			<label class="form-label">Height</label>
-			<input type="number" class="form-control" value="{{ user.height }}" />
+			<input type="number" id="height" class="form-control" value="{{ user.height }}" />
 		</div>
 		<div class="mb-3">
 			<label class="form-label">Weight</label>
-			<input type="number" class="form-control" value="{{ user.weight }}" />
+			<input type="number" id="weight" class="form-control" value="{{ user.weight }}" />
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Sex</label>
+			<input type="text" class="form-control" value="{{ user.sex|title }}" disabled readonly/>
 		</div>
 		<div class="mb-3">
 			<label class="form-label">Password</label>
@@ -219,14 +238,17 @@
 				placeholder="To change your password, please enter the previous one"
 			/>
 		</div>
-		<button
-			style="width: 6em; height: 3em"
-			type="submit"
-			id="submit-btn"
-			class="btn btn-secondary"
-		>
-			Save
-		</button>
+		<div class="d-flex">
+            <button
+                style="width: 6em; height: 3em"
+                type="submit"
+                id="submit-btn"
+                class="btn btn-secondary"
+            >
+                Save
+            </button>
+            <p class="error-messages"></p>
+        </div>
 	</div>
 	<div class="modal" tabindex="-1">
 		<div class="modal-dialog">
@@ -332,6 +354,7 @@
 				success: function (response) {
 					if (response.success) {
 						$(".modal").modal("show");
+                        $("#change-password").val("");
 					} else {
 						$(".modal").modal("hide");
 					}
@@ -359,6 +382,55 @@
                 },
                 error: function() {
                     alert("Error: Could not change password.");
+                }
+            });
+        });
+        // On clicking the save button
+        $('#submit-btn').click(function() {
+            // Get the input field values
+            var username = $("#username").val().trim();
+            var phoneNumber = $("#number").val().trim();
+            var height = $("#height").val().trim();
+            var weight = $("#weight").val().trim();
+            
+            // Validate the input fields
+            var errors = '';
+            if (username == '') {
+                errors += 'Please enter a valid username.';
+            }
+            if (phoneNumber == '') {
+                errors += 'Please enter a valid phone number.';
+            }
+            if (height == '') {
+                errors += 'Please enter a valid height.';
+            }
+            if (weight == '') {
+                errors += 'Please enter a valid weight.';
+            }
+            // Display error messages if any
+            if (errors != '') {
+                $('.error-messages').html(errors);
+                return false;
+            }
+            
+            // If all fields are valid, send an AJAX request to update the database
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'update-user' %}",
+                data: {
+                    'username': username,
+                    'phoneNumber': phoneNumber,
+                    'height': height,
+                    'weight': weight,
+                    "csrfmiddlewaretoken": "{{ csrf_token }}"
+                },
+                success: function(response) {
+                    // Display success message
+                    alert('User information updated successfully!');
+                },
+                error: function(xhr, status, error) {
+                    // Display error message
+                    alert('An error occurred while updating user information');
                 }
             });
         });

@@ -10,29 +10,44 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from .models import CustomUser, Recipe, LikedRecipe
 from unslugify import unslugify
+from datetime import date
 
 def index(request):
     user = request.user
-    liked_recipes = LikedRecipe.objects.filter(user=user).values_list('recipe', flat=True)
-    recipes = Recipe.objects.filter(id__in=liked_recipes)
-    return render(request, "fitness_app/index.html", {
-        "user": user,
-        "recipes": recipes
-    })
+    try:
+        liked_recipes = LikedRecipe.objects.filter(user=user).values_list('recipe', flat=True)
+        recipes = Recipe.objects.filter(id__in=liked_recipes)
+        birth_year, birth_month, birth_day = map(int, user.birth_date.strftime('%Y-%m-%d').split('-'))
+        today = date.today()
+        age = today.year - birth_year - ((today.month, today.day) < (birth_month, birth_day))
+        return render(request, "fitness_app/index.html", {
+            "user": user,
+            "age": age,
+            "recipes": recipes
+        })
+    except TypeError:
+        return render(request, "fitness_app/index.html")
+        
 
 
 def recipes(request):
     recipes = Recipe.objects.all().order_by('-id')
     user = request.user
-    liked_recipes = LikedRecipe.objects.filter(user=user).values_list('recipe', flat=True)
     paginator = Paginator(recipes, 15)
     start = int(request.GET.get('start', 0))
     data = paginator.get_page(start // 15 + 1)
-    return render(request, 'fitness_app/recipes.html', {
-        'data': data, 
-        'start': start,
-        'liked_recipes': liked_recipes
-    })
+    try:
+        liked_recipes = LikedRecipe.objects.filter(user=user).values_list('recipe', flat=True)
+        return render(request, 'fitness_app/recipes.html', {
+            'data': data, 
+            'start': start,
+            'liked_recipes': liked_recipes
+        })
+    except TypeError:
+        return render(request, 'fitness_app/recipes.html', {
+            'data': data, 
+            'start': start
+        })
 
 
 def recipe(request, id, title):
@@ -129,12 +144,30 @@ def validate_password(request):
         
 
 @login_required
+def update_user(request):
+    user = request.user 
+    username = request.POST.get('username')
+    phoneNumber = request.POST.get('phoneNumber')
+    height = request.POST.get('height')
+    weight = request.POST.get('weight')
+
+    user.username = username
+    user.phone_number = phoneNumber
+    user.height = height
+    user.weight = weight
+
+    user.save()
+    return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
+
+@login_required
 def change_password(request):
     if request.method == 'POST':
         new_password = request.POST.get('new_password')
         confirm_password = request.POST.get('confirm_password')
         if new_password != confirm_password:
             return JsonResponse({'success': False, 'message': 'Passwords do not match.'})
+        elif len(new_password) < 8:
+            return JsonResponse({'success': False, 'message': 'Password should have at least 8 characters.'})
         else:
             user = request.user
             user.set_password(new_password)

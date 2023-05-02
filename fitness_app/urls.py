@@ -9,6 +9,10 @@ urlpatterns = [
     path('recipes/<slug:category>', views.category, name='category'),
     path('search', views.search, name='search'),
     path('search/<str:search_type>/<str:query>', views.search_results, name='search_results'),
+    path('like-recipe', views.like_recipe, name='like-recipe'),
+    path('unlike-recipe', views.unlike_recipe, name='unlike-recipe'),
+    path('check-password', views.validate_password, name='check-password'),
+    path('change-password', views.change_password, name='change-password'),
 
     path('register', views.register, name='register'),
     path("login", views.login_view, name="login"),

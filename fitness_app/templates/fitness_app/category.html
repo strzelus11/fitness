@@ -23,6 +23,13 @@
 					class="btn btn-primary btn-card-bottom"
 					>View recipe</a
 				>
+                {% if recipe.id in liked_recipes %}
+                <button class="unlike-recipe" data-recipe-id="{{ recipe.id }}"><i class="fa fa-heart"></i></button>
+                {% else %}
+                    <button class="like-recipe" data-recipe-id="{{ recipe.id }}"><i class="fa fa-heart"></i></button>   
+                {% endif %} 
+                <button class="plus" data-recipe-id="{{ recipe.id }}"><i class="fa fa-plus"></i></button>
+                <!-- <a class="check" href=""><i class="fa fa-check"></i></a> -->
 			</div>
 		</div>
 	</div>

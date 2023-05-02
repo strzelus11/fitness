@@ -1,4 +1,4 @@
-{% extends "fitness_app/layout.html" %} {% block title %} Register {% endblock %} {% block body %}
+{% extends "fitness_app/layout.html" %} {% block title %} Register {% endblock %} {% block body %} 
 <form
 	action="{% url 'register' %}"
 	method="post"
@@ -30,12 +30,7 @@
 	</div>
 	<div class="col-md-3">
 		<label for="phoneNumber" class="form-label">Phone number *</label>
-		<input
-			type="tel"
-			class="form-control"
-			id="number"
-			name="number"
-		/>
+		<input type="tel" class="form-control" id="number" name="number" />
 		<p id="error-number"></p>
 	</div>
 	<div class="col-md-6">
@@ -99,7 +94,7 @@
 	<div class="col-md-3">
 		<label for="date" class="form-label">Date of birth *</label>
 		<input class="form-control" type="date" id="date" name="date" />
-        <p id="error-date"></p>
+		<p id="error-date"></p>
 	</div>
 	<div class="col-md-3">
 		<label for="height" class="form-label">Height (cm) *</label>
@@ -149,23 +144,29 @@
 		</div>
 	</div>
 	<div class="col-12 d-flex justify-content-around">
-		<button type="submit" id="submit-btn" class="btn btn-primary">
+		<button
+			style="width: 6em; height: 3em"
+			type="submit"
+			id="submit-btn"
+			class="btn btn-primary"
+		>
 			Sign in
 		</button>
-        {% if messages %}
-        <ul class="messages">
+        <div>
             {% for message in messages %}
-                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
-                    <div class="alert alert-warning">{{ message }}</div>
-                </li>
+            <div class="alert alert-warning">
+                {{ message }}
+            </div>
             {% endfor %}
-        </ul>
-        {% endif %}
-        <p>Please complete the required (*) fields before submitting the registration form</p>
+        </div>
+		<p>
+			Please complete the required (*) fields before submitting the registration
+			form
+		</p>
 	</div>
 </form>
 <script>
-	$(document).ready(function () { 
+	$(document).ready(function () {
 		// Add event listeners to the form fields
 		$("#name").on("input", validateName);
 		$("#surname").on("input", validateSurname);
@@ -217,9 +218,7 @@
 		function validateNumber() {
 			let number = $("#number").val();
 			if (!/^[0-9]{9}$/.test(number)) {
-				$("#error-number")
-					.text("Invalid phone number.")
-					.css("color", "red");
+				$("#error-number").text("Invalid phone number.").css("color", "red");
 				$("#number").css("border", "3px solid red");
 			} else {
 				$("#error-number").text("");
@@ -278,7 +277,7 @@
 			}
 		}
 
-        function validateDate() {
+		function validateDate() {
 			let date = $("#date").val();
 			if (new Date(date) > new Date()) {
 				$("#error-date")

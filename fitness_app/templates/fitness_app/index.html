@@ -1,4 +1,367 @@
 {% extends "fitness_app/layout.html" %} {% block title %} Home {% endblock %} 
-{% block body %}
+{% block body %} {% if user.is_authenticated %}
+<div>
+	{% for message in messages %}
+	<div class="alert alert-warning">{{ message }}</div>
+	{% endfor %}
+</div>
+<h2><strong>@{{ user.username }}</strong></h2>
+<br />
+<nav>
+	<div class="nav nav-tabs mb-5" id="nav-tab" role="tablist">
+		<button
+			class="nav-link active"
+			id="nav-home-tab"
+			data-bs-toggle="tab"
+			data-bs-target="#nav-home"
+			type="button"
+			role="tab"
+			aria-controls="nav-home"
+			aria-selected="true"
+		>
+			Your recipes
+		</button>
+		<button
+			class="nav-link"
+			id="nav-profile-tab"
+			data-bs-toggle="tab"
+			data-bs-target="#nav-profile"
+			type="button"
+			role="tab"
+			aria-controls="nav-profile"
+			aria-selected="false"
+		>
+			Your exercises
+		</button>
+		<button
+			class="nav-link"
+			id="nav-contact-tab"
+			data-bs-toggle="tab"
+			data-bs-target="#nav-contact"
+			type="button"
+			role="tab"
+			aria-controls="nav-contact"
+			aria-selected="false"
+		>
+			Personal data
+		</button>
+	</div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+	<div
+		class="tab-pane fade show active"
+		id="nav-home"
+		role="tabpanel"
+		aria-labelledby="nav-home-tab"
+		tabindex="0"
+	>
+		<div class="d-flex">
+			<div class="d-flex align-items-start sidebar">
+				<div
+					class="nav flex-column nav-pills me-3"
+					id="v-pills-tab"
+					role="tablist"
+					aria-orientation="vertical"
+				>
+					<button
+						class="nav-link active"
+						id="v-pills-home-tab"
+						data-bs-toggle="pill"
+						data-bs-target="#v-pills-home"
+						type="button"
+						role="tab"
+						aria-controls="v-pills-home"
+						aria-selected="true"
+					>
+						{% with recipes|length as recipe_count %} 
+                            Liked recipes ({{ recipe_count }}) 
+                        {% endwith %}
+					</button>
+					<button
+						class="nav-link"
+						id="v-pills-profile-tab"
+						data-bs-toggle="pill"
+						data-bs-target="#v-pills-profile"
+						type="button"
+						role="tab"
+						aria-controls="v-pills-profile"
+						aria-selected="false"
+					>
+						Cookbook
+					</button>
+				</div>
+			</div>
+			<div class="tab-content" id="v-pills-tabContent">
+				<div
+					class="tab-pane fade show active"
+					id="v-pills-home"
+					role="tabpanel"
+					aria-labelledby="v-pills-home-tab"
+					tabindex="0"
+				>
+					<div class="container text-center">
+						<div class="row row-cols-auto" id="container">
+							{% for recipe in recipes %}
+							<div class="col mb-5 mx-5">
+								<div class="card h-100 card-index">
+									<a
+										class="title-link"
+										href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+										><img
+											src="{{ recipe.image }}"
+											class="card-img-top"
+											alt="..."
+									/></a>
+									<div
+										class="card-body text-center"
+										style="padding-bottom: 6em"
+									>
+										<a
+											class="title-link"
+											href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+											><h5 class="card-title fw-bold">{{ recipe.title }}</h5></a
+										>
+										{% for category in recipe.categories %}
+										<a
+											href="{% url 'category' category|slugify %}"
+											class="card-link"
+											>{{ category }}</a
+										>
+										{% endfor %}
+										<a
+											href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+											class="btn btn-primary btn-card-bottom view-recipe"
+											>View recipe</a
+										>
+									</div>
+									<button
+										class="unlike-recipe"
+										data-recipe-id="{{ recipe.id }}"
+									>
+										<i class="fa fa-heart"></i>
+									</button>
+									<button class="plus" data-recipe-id="{{ recipe.id }}">
+										<i class="fa fa-plus"></i>
+									</button>
+									<!-- <a class="check" href=""><i class="fa fa-check"></i></a> -->
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+				<div
+					class="tab-pane fade"
+					id="v-pills-profile"
+					role="tabpanel"
+					aria-labelledby="v-pills-profile-tab"
+					tabindex="0"
+				></div>
+			</div>
+		</div>
+	</div>
 
+	<div
+		class="tab-pane fade"
+		id="nav-profile"
+		role="tabpanel"
+		aria-labelledby="nav-profile-tab"
+		tabindex="0"
+	>
+		Profile
+	</div>
+	<div
+		class="tab-pane fade border border-dark border-3 rounded p-3 mx-5"
+		id="nav-contact"
+		role="tabpanel"
+		aria-labelledby="nav-contact-tab"
+		tabindex="0"
+	>
+		<h3 class="mb-5">Your personal data:</h3>
+		<div class="mb-3">
+			<label class="form-label">Email address</label>
+			<input
+				type="email"
+				class="form-control"
+				value="{{ user.email }}"
+				disabled
+				readonly
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Username</label>
+			<input
+				type="username"
+				class="form-control"
+				id="exampleFormControlInput1"
+				value="{{ user.username }}"
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Phone number</label>
+			<input type="tel" class="form-control" value="{{ user.phone_number }}" />
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Height</label>
+			<input type="number" class="form-control" value="{{ user.height }}" />
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Weight</label>
+			<input type="number" class="form-control" value="{{ user.weight }}" />
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Password</label>
+			<input
+				type="password"
+				id="change-password"
+				data-password="{{ user.password }}"
+				class="form-control"
+				placeholder="To change your password, please enter the previous one"
+			/>
+		</div>
+		<button
+			style="width: 6em; height: 3em"
+			type="submit"
+			id="submit-btn"
+			class="btn btn-secondary"
+		>
+			Save
+		</button>
+	</div>
+	<div class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Change password</h5>
+					<button
+						type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Close"
+					></button>
+				</div>
+				<div class="modal-body">
+					<input
+                    id="new-password"
+						type="password"
+						class="form-control mb-3"
+						placeholder="Enter new password"
+					/>
+					<input
+                    id="confirm-password"
+						type="password"
+						class="form-control"
+						placeholder="Confirm new password"
+					/>
+				</div>
+				<div class="modal-footer">
+					<button
+						type="button"
+						class="btn btn-secondary"
+						data-bs-dismiss="modal"
+					>
+						Close
+					</button>
+					<button type="button" id="save-changes" class="btn btn-primary">Save changes</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% else %}
+<div class="text-center mx-5">
+	<h2 class="mb-5"><strong>You are not logged in</strong></h2>
+	<hr />
+	<br /><br />
+	<h3 class="mt-5">
+		Log In <span><a href="{% url 'login' %}">here</a></span>
+	</h3>
+	<br />
+	<h3>
+		Don't have an account? Register
+		<span><a href="{% url 'register' %}">here</a></span>
+	</h3>
+</div>
+{% endif %}
+<script>
+	const csrfToken = "{{ csrf_token }}";
+</script>
+<script>
+	$(document).ready(function () {
+		$(document).on("click", ".unlike-recipe", function () {
+			var recipeId = $(this).data("recipe-id");
+			var $button = $(this);
+			$.ajax({
+				url: "{% url 'unlike-recipe' %}",
+				method: "POST",
+				headers: { "X-CSRFToken": csrfToken },
+				data: {
+					recipe_id: recipeId,
+				},
+				success: function (response) {
+					if (response.success) {
+						// Update the UI to indicate that the recipe was unliked
+						$button.removeClass("unlike-recipe").addClass("like-recipe");
+						// Reload the container div with all the recipes
+						$("#container").load(location.href + " #container", function () {
+							// Update the button with the new recipe count
+							var recipeCount = $("#container").find(".card").length;
+							$("#v-pills-home-tab").text(
+								"Liked recipes (" + recipeCount + ")"
+							);
+						});
+					} else {
+						alert("Error: could not remove recipe from liked recipes");
+					}
+				},
+				error: function () {
+					alert("Error: could not remove recipe from liked recipes");
+				},
+			});
+		});
+
+		$("#change-password").on("input", function () {
+			var input = $(this).val();
+			$.ajax({
+				url: "{% url 'check-password' %}",
+				type: "POST",
+				data: {
+					input: input,
+					csrfmiddlewaretoken: "{{ csrf_token }}",
+				},
+				success: function (response) {
+					if (response.success) {
+						$(".modal").modal("show");
+					} else {
+						$(".modal").modal("hide");
+					}
+				},
+			});
+		});
+
+        $("#save-changes").on("click", function () {
+            var new_password = $("#new-password").val();
+            var confirm_password = $("#confirm-password").val();
+            $.ajax({
+                url: "{% url 'change-password' %}",
+                type: "POST",
+                data: {
+                    "new_password": new_password,
+                    "confirm_password": confirm_password,
+                    "csrfmiddlewaretoken": "{{ csrf_token }}"
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert("Password changed successfully!");
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert("Error: Could not change password.");
+                }
+            });
+        });
+	});
+</script>
 {% endblock %}

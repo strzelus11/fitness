@@ -14,6 +14,8 @@ urlpatterns = [
     path('check-password', views.validate_password, name='check-password'),
     path('change-password', views.change_password, name='change-password'),
     path('update-user', views.update_user, name='update-user'),
+    path('add-to-cookbook', views.add_to_cookbook, name='add-to-cookbook'),
+    path('remove-from-cookbook', views.remove_from_cookbook, name='remove-from-cookbook'),
 
     path('register', views.register, name='register'),
     path("login", views.login_view, name="login"),

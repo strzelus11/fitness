@@ -10,12 +10,12 @@
 <form action="{% url 'login' %}" method="post" class="mx-5">
 	{% csrf_token %}
 	<div class="col-md-4 mx-auto py-2">
-		<label for="username" class="form-label">Username</label>
+		<label for="email" class="form-label">Email</label>
 		<input
-			type="text"
+			type="email"
 			class="form-control"
-			id="username"
-			name="username"
+			id="email"
+			name="email"
             autofocus
 			required
 		/>

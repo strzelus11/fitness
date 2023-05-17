@@ -2,7 +2,7 @@
 	margin: 2em 4em;
 	font-family: "Raleway", sans-serif;
 	font-weight: 300;
-	overflow-y: hidden;
+	overflow-x: hidden;
 }
 
 .alert-img {
@@ -10,7 +10,7 @@
 }
 
 .alert {
-	height: 4em;
+	height: 3.5em;
 }
 
 .btn-card-bottom {
@@ -87,7 +87,6 @@ ol li::before {
 }
 
 .scroll-to-top:hover {
-	font-size: 25px;
 	color: gray;
 	text-decoration: none;
 }
@@ -121,7 +120,7 @@ html {
 	background-color: inherit;
 }
 
-.plus {
+.add-to-cookbook {
 	position: absolute;
 	font-size: 1.5em;
 	bottom: 20px;
@@ -131,15 +130,30 @@ html {
 	background-color: inherit;
 }
 
-.sidebar {
-    width: 400px;
+.remove-from-cookbook {
+	position: absolute;
+	font-size: 1.5em;
+	bottom: 20px;
+	left: 50px;
+	color: green;
+	border: none;
+	background-color: inherit;
 }
 
 .card-index {
-    width: 700px;
+    width: 40em;
+    margin-left: 15em;
 }
 
 .error-messages {
-    color: red;
-    margin-left: 5em;
+	color: red;
+	margin-left: 5em;
+}
+
+.sidebar {
+width: 100px;
+}
+
+.ol-index {
+    margin-bottom: 100px;
 }

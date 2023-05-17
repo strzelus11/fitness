@@ -8,26 +8,27 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.contrib import messages
 from django.core.paginator import Paginator
-from .models import CustomUser, Recipe, LikedRecipe
+from .models import CustomUser, Recipe, LikedRecipe, Cookbook
 from unslugify import unslugify
-from datetime import date
 
 def index(request):
     user = request.user
     try:
-        liked_recipes = LikedRecipe.objects.filter(user=user).values_list('recipe', flat=True)
-        recipes = Recipe.objects.filter(id__in=liked_recipes)
-        birth_year, birth_month, birth_day = map(int, user.birth_date.strftime('%Y-%m-%d').split('-'))
-        today = date.today()
-        age = today.year - birth_year - ((today.month, today.day) < (birth_month, birth_day))
+        liked_recipes_list = LikedRecipe.objects.filter(user=user).values_list('recipe', flat=True)
+        liked_recipes = Recipe.objects.filter(id__in=liked_recipes_list)
+        cookbook_list = Cookbook.objects.filter(user=user).values_list('recipe', flat=True)
+        cookbook_ids = cookbook_list.values_list('recipe__id', flat=True)
+        liked_ids = liked_recipes_list.values_list('recipe__id', flat=True)
+        cookbook = Recipe.objects.filter(id__in=cookbook_list)
         return render(request, "fitness_app/index.html", {
             "user": user,
-            "age": age,
-            "recipes": recipes
+            "recipes": liked_recipes,
+            'cookbook_ids': cookbook_ids,
+            "liked_ids": liked_ids,
+            "cookbook": cookbook
         })
     except TypeError:
-        return render(request, "fitness_app/index.html")
-        
+        return render(request, "fitness_app/index.html")   
 
 
 def recipes(request):
@@ -38,10 +39,12 @@ def recipes(request):
     data = paginator.get_page(start // 15 + 1)
     try:
         liked_recipes = LikedRecipe.objects.filter(user=user).values_list('recipe', flat=True)
+        cookbook = Cookbook.objects.filter(user=user).values_list('recipe', flat=True)
         return render(request, 'fitness_app/recipes.html', {
             'data': data, 
             'start': start,
-            'liked_recipes': liked_recipes
+            'liked_recipes': liked_recipes,
+            'cookbook': cookbook
         })
     except TypeError:
         return render(request, 'fitness_app/recipes.html', {
@@ -78,13 +81,24 @@ def categories(request):
 
 
 def category(request, category):
+    user = request.user
     category = unslugify(category)
     recipes = Recipe.objects.filter(categories__icontains=category)
 
-    return render(request, 'fitness_app/category.html', {
-        "recipes": recipes,
-        "category": category,
-    })
+    try:
+        liked_recipes = LikedRecipe.objects.filter(user=user).values_list('recipe', flat=True)
+        cookbook = Cookbook.objects.filter(user=user).values_list('recipe', flat=True)
+        return render(request, 'fitness_app/category.html', {
+            'recipes': recipes,
+            'category': category,
+            'liked_recipes': liked_recipes,
+            'cookbook': cookbook
+        })
+    except TypeError:
+        return render(request, 'fitness_app/category.html', {
+            'category': category,
+            'recipes': recipes
+        })
 
 
 def search(request):
@@ -128,6 +142,27 @@ def unlike_recipe(request):
         recipe_id = request.POST.get('recipe_id')
         recipe = get_object_or_404(Recipe, pk=recipe_id)
         LikedRecipe.objects.filter(user=request.user, recipe=recipe).delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+@login_required
+def add_to_cookbook(request):
+    if request.method == 'POST':
+        recipe_id = request.POST.get('recipe_id')
+        recipe = Recipe.objects.get(id=recipe_id)
+        liked_recipe = Cookbook(user=request.user, recipe=recipe)
+        liked_recipe.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+@login_required
+def remove_from_cookbook(request):
+    if request.method == 'POST':
+        recipe_id = request.POST.get('recipe_id')
+        recipe = get_object_or_404(Recipe, pk=recipe_id)
+        Cookbook.objects.filter(user=request.user, recipe=recipe).delete()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
 
@@ -246,16 +281,16 @@ def register(request):
 
 def login_view(request):
     if request.method == "POST":
-        username = request.POST["username"]
+        email = request.POST["email"]
         password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
+        user = authenticate(request, email=email, password=password)
 
         if user is not None:
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "fitness_app/login.html", {
-                "message": "Invalid username and/or password"
+                "message": "Invalid email and/or password"
             })
     else:
         return render(request, "fitness_app/login.html")

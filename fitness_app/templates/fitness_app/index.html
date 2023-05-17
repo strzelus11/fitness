@@ -55,41 +55,37 @@
 		aria-labelledby="nav-home-tab"
 		tabindex="0"
 	>
-		<div class="d-flex">
-			<div class="d-flex align-items-start sidebar">
-				<div
-					class="nav flex-column nav-pills me-3"
-					id="v-pills-tab"
-					role="tablist"
-					aria-orientation="vertical"
+		<div class="d-flex align-items-start">
+			<div
+				class="nav flex-column nav-pills sidebar"
+				id="v-pills-tab"
+				role="tablist"
+				aria-orientation="vertical"
+			>
+				<button
+					class="nav-link active"
+					id="v-pills-home-tab"
+					data-bs-toggle="pill"
+					data-bs-target="#v-pills-home"
+					type="button"
+					role="tab"
+					aria-controls="v-pills-home"
+					aria-selected="true"
 				>
-					<button
-						class="nav-link active"
-						id="v-pills-home-tab"
-						data-bs-toggle="pill"
-						data-bs-target="#v-pills-home"
-						type="button"
-						role="tab"
-						aria-controls="v-pills-home"
-						aria-selected="true"
-					>
-						{% with recipes|length as recipe_count %} 
-                            Liked recipes ({{ recipe_count }}) 
-                        {% endwith %}
-					</button>
-					<button
-						class="nav-link"
-						id="v-pills-profile-tab"
-						data-bs-toggle="pill"
-						data-bs-target="#v-pills-profile"
-						type="button"
-						role="tab"
-						aria-controls="v-pills-profile"
-						aria-selected="false"
-					>
-						Cookbook
-					</button>
-				</div>
+					{% with recipes|length as recipe_count %} Liked recipes ({{ recipe_count }}) {% endwith %}
+				</button>
+				<button
+					class="nav-link"
+					id="v-pills-profile-tab"
+					data-bs-toggle="pill"
+					data-bs-target="#v-pills-profile"
+					type="button"
+					role="tab"
+					aria-controls="v-pills-profile"
+					aria-selected="false"
+				>
+					{% with cookbook|length as recipe_count %} Cookbook ({{ recipe_count}}) {% endwith %}
+				</button>
 			</div>
 			<div class="tab-content" id="v-pills-tabContent">
 				<div
@@ -99,193 +95,299 @@
 					aria-labelledby="v-pills-home-tab"
 					tabindex="0"
 				>
-					<div class="container text-center">
-						<div class="row row-cols-auto" id="container">
-							{% for recipe in recipes %}
-							<div class="col mb-5 mx-5">
-								<div class="card h-100 card-index">
+					<div class="row row-cols-2" id="container">
+                        {% if recipes %}
+						{% for recipe in recipes %}
+						<div class="col mb-5 mx-5">
+							<div class="card h-100 card-index">
+								<a
+									class="title-link"
+									href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+									><img src="{{ recipe.image }}" class="card-img-top" alt="..."
+								/></a>
+								<div class="card-body text-center" style="padding-bottom: 6em">
 									<a
 										class="title-link"
 										href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
-										><img
-											src="{{ recipe.image }}"
-											class="card-img-top"
-											alt="..."
-									/></a>
-									<div
-										class="card-body text-center"
-										style="padding-bottom: 6em"
+										><h5 class="card-title fw-bold">{{ recipe.title }}</h5></a
 									>
-										<a
-											class="title-link"
-											href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
-											><h5 class="card-title fw-bold">{{ recipe.title }}</h5></a
-										>
-										{% for category in recipe.categories %}
-										<a
-											href="{% url 'category' category|slugify %}"
-											class="card-link"
-											>{{ category }}</a
-										>
-										{% endfor %}
-										<a
-											href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
-											class="btn btn-primary btn-card-bottom view-recipe"
-											>View recipe</a
-										>
-									</div>
-									<button
-										class="unlike-recipe"
-										data-recipe-id="{{ recipe.id }}"
+									{% for category in recipe.categories %}
+									<a
+										href="{% url 'category' category|slugify %}"
+										class="card-link"
+										>{{ category }}</a
 									>
-										<i class="fa fa-heart"></i>
-									</button>
-									<button class="plus" data-recipe-id="{{ recipe.id }}">
-										<i class="fa fa-plus"></i>
-									</button>
-									<!-- <a class="check" href=""><i class="fa fa-check"></i></a> -->
+									{% endfor %}
+									<a
+										href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+										class="btn btn-primary btn-card-bottom view-recipe"
+										>View recipe</a
+									>
 								</div>
+								<button class="unlike-recipe" data-recipe-id="{{ recipe.id }}">
+									<i class="fa fa-heart"></i>
+								</button>
+								{% if recipe.id in cookbook_ids %}
+								<button
+									class="remove-from-cookbook"
+									data-recipe-id="{{ recipe.id }}"
+								>
+									<i class="fa fa-check"></i>
+								</button>
+								{% else %}
+								<button
+									class="add-to-cookbook"
+									data-recipe-id="{{ recipe.id }}"
+								>
+									<i class="fa fa-plus"></i>
+								</button>
+								{% endif %}
 							</div>
-							{% endfor %}
 						</div>
+						{% endfor %}
+                        {% else %}
+                        <h2 class="col mb-5 mx-5">No liked recipes</h2>
+                        {% endif %}
 					</div>
 				</div>
-				<div
-					class="tab-pane fade"
-					id="v-pills-profile"
-					role="tabpanel"
-					aria-labelledby="v-pills-profile-tab"
-					tabindex="0"
-				></div>
+			</div>
+			<div
+				class="tab-pane fade"
+				id="v-pills-profile"
+				role="tabpanel"
+				aria-labelledby="v-pills-profile-tab"
+				tabindex="0"
+			>
+            <div id="recipe-list">
+                {% if cookbook %}
+                <div class="d-flex justify-content-center mb-3">
+                    <h5>Refresh the page to remove from cookbook completely</h5>
+                    <button type="button" class="btn btn-dark mx-3">Refresh</button>
+                </div>
+					{% for recipe in cookbook %}
+					<div class="card h-100 recipe card-index cookbook">
+						<a
+							class="title-link"
+							href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+							><img src="{{ recipe.image }}" class="card-img-top" alt="..."
+						/></a>
+						<div class="card-body text-center" style="padding-bottom: 6em">
+							<a
+								class="title-link"
+								href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+								><h5 class="card-title fw-bold">{{ recipe.title }}</h5></a
+							>
+							{% for category in recipe.categories %}
+							<a href="{% url 'category' category|slugify %}" class="card-link"
+								>{{ category }}</a
+							>
+							{% endfor %}
+							<a
+								href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+								class="btn btn-primary btn-card-bottom view-recipe"
+								>View recipe</a
+							>
+						</div>
+						<button class="unlike-recipe" data-recipe-id="{{ recipe.id }}">
+							<i class="fa fa-heart"></i>
+						</button>
+						{% if recipe.id in liked_ids %}
+						<button class="unlike-recipe" data-recipe-id="{{ recipe.id }}">
+							<i class="fa fa-heart"></i>
+						</button>
+						{% else %}
+						<button class="like-recipe" data-recipe-id="{{ recipe.id }}">
+							<i class="fa fa-heart"></i>
+						</button>
+						{% endif %} {% if recipe.id in cookbook_ids %}
+						<button
+							class="remove-from-cookbook"
+							data-recipe-id="{{ recipe.id }}"
+						>
+							<i class="fa fa-check"></i>
+						</button>
+						{% else %}
+						<button class="add-to-cookbook" data-recipe-id="{{ recipe.id }}">
+							<i class="fa fa-plus"></i>
+						</button>
+						{% endif %}
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <h2 class="col mb-5 mx-5">No recipes in cookbook</h2>
+                    {% endif %}
+                </div>
+                <div
+                id="pagination"
+                style="width: 75vw"
+                class="m-3 text-center"
+                ></div>
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div
-		class="tab-pane fade"
-		id="nav-profile"
-		role="tabpanel"
-		aria-labelledby="nav-profile-tab"
-		tabindex="0"
-	>
-		Profile
+<div
+	class="tab-pane fade"
+	id="nav-profile"
+	role="tabpanel"
+	aria-labelledby="nav-profile-tab"
+	tabindex="0"
+>
+	Profile
+</div>
+<div
+	class="tab-pane fade border border-secondary border-3 rounded p-3 mx-5"
+	id="nav-contact"
+	role="tabpanel"
+	aria-labelledby="nav-contact-tab"
+	tabindex="0"
+>
+	<h3 class="mb-3">Your personal data:</h3>
+	<div class="alert alert-secondary" role="alert">
+		<strong>* Grayed out fields are non changeable</strong>
 	</div>
-	<div
-		class="tab-pane fade border border-secondary border-3 rounded p-3 mx-5"
-		id="nav-contact"
-		role="tabpanel"
-		aria-labelledby="nav-contact-tab"
-		tabindex="0"
-	>
-		<h3 class="mb-3">Your personal data:</h3>
-        <div class="alert alert-secondary" role="alert">
-            <strong>* Grayed out fields are non changeable</strong>
-        </div>
-		<div class="mb-3">
-			<label class="form-label">Email address</label>
-			<input
-				type="email"
-				class="form-control"
-				value="{{ user.email }}"
-				disabled
-				readonly
-			/>
-		</div>
-        <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input type="text" class="form-control" value="{{ user.first_name }}" disabled readonly/>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Surname</label>
-            <input type="text" class="form-control" value="{{ user.last_name }}" disabled readonly/>
-        </div>
-		<div class="mb-3">
-			<label class="form-label">Username</label>
-			<input
-				type="username"
-				class="form-control"
-				id="username"
-				value="{{ user.username }}"
-			/>
-		</div>
-		<div class="mb-3">
-			<label class="form-label">Phone number</label>
-			<input type="tel" id="number" class="form-control" value="{{ user.phone_number }}" />
-		</div>
-        <div class="mb-3">
-			<label class="form-label">Age</label>
-			<input type="number" class="form-control" value="{{ age }}" disabled readonly/>
-		</div>
-		<div class="mb-3">
-			<label class="form-label">Height</label>
-			<input type="number" id="height" class="form-control" value="{{ user.height }}" />
-		</div>
-		<div class="mb-3">
-			<label class="form-label">Weight</label>
-			<input type="number" id="weight" class="form-control" value="{{ user.weight }}" />
-		</div>
-		<div class="mb-3">
-			<label class="form-label">Sex</label>
-			<input type="text" class="form-control" value="{{ user.sex|title }}" disabled readonly/>
-		</div>
-		<div class="mb-3">
-			<label class="form-label">Password</label>
-			<input
-				type="password"
-				id="change-password"
-				data-password="{{ user.password }}"
-				class="form-control"
-				placeholder="To change your password, please enter the previous one"
-			/>
-		</div>
-		<div class="d-flex">
-            <button
-                style="width: 6em; height: 3em"
-                type="submit"
-                id="submit-btn"
-                class="btn btn-secondary"
-            >
-                Save
-            </button>
-            <p class="error-messages"></p>
-        </div>
+	<div class="mb-3">
+		<label class="form-label">Email address</label>
+		<input
+			type="email"
+			class="form-control"
+			value="{{ user.email }}"
+			disabled
+			readonly
+		/>
 	</div>
-	<div class="modal" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title">Change password</h5>
-					<button
-						type="button"
-						class="btn-close"
-						data-bs-dismiss="modal"
-						aria-label="Close"
-					></button>
-				</div>
-				<div class="modal-body">
-					<input
-                    id="new-password"
-						type="password"
-						class="form-control mb-3"
-						placeholder="Enter new password"
-					/>
-					<input
-                    id="confirm-password"
-						type="password"
-						class="form-control"
-						placeholder="Confirm new password"
-					/>
-				</div>
-				<div class="modal-footer">
-					<button
-						type="button"
-						class="btn btn-secondary"
-						data-bs-dismiss="modal"
-					>
-						Close
-					</button>
-					<button type="button" id="save-changes" class="btn btn-primary">Save changes</button>
-				</div>
+	<div class="mb-3">
+		<label class="form-label">Name</label>
+		<input
+			type="text"
+			class="form-control"
+			value="{{ user.first_name }}"
+			disabled
+			readonly
+		/>
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Surname</label>
+		<input
+			type="text"
+			class="form-control"
+			value="{{ user.last_name }}"
+			disabled
+			readonly
+		/>
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Username</label>
+		<input
+			type="username"
+			class="form-control"
+			id="username"
+			value="{{ user.username }}"
+		/>
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Phone number</label>
+		<input
+			type="tel"
+			id="number"
+			class="form-control"
+			value="{{ user.phone_number }}"
+		/>
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Age</label>
+		<input
+			type="number"
+			class="form-control"
+			value="{{ user.age }}"
+			disabled
+			readonly
+		/>
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Height</label>
+		<input
+			type="number"
+			id="height"
+			class="form-control"
+			value="{{ user.height }}"
+		/>
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Weight</label>
+		<input
+			type="number"
+			id="weight"
+			class="form-control"
+			value="{{ user.weight }}"
+		/>
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Sex</label>
+		<input
+			type="text"
+			class="form-control"
+			value="{{ user.sex|title }}"
+			disabled
+			readonly
+		/>
+	</div>
+	<div class="mb-3">
+		<label class="form-label">Password</label>
+		<input
+			type="password"
+			id="change-password"
+			data-password="{{ user.password }}"
+			class="form-control"
+			placeholder="To change your password, please enter the previous one"
+		/>
+	</div>
+	<div class="d-flex">
+		<button
+			style="width: 6em; height: 3em"
+			type="submit"
+			id="submit-btn"
+			class="btn btn-secondary"
+		>
+			Save
+		</button>
+		<p class="error-messages"></p>
+	</div>
+</div>
+<div class="modal" tabindex="-1">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Change password</h5>
+				<button
+					type="button"
+					class="btn-close"
+					data-bs-dismiss="modal"
+					aria-label="Close"
+				></button>
+			</div>
+			<div class="modal-body">
+				<input
+					id="new-password"
+					type="password"
+					class="form-control mb-3"
+					placeholder="Enter new password"
+				/>
+				<input
+					id="confirm-password"
+					type="password"
+					class="form-control"
+					placeholder="Confirm new password"
+				/>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+					Close
+				</button>
+				<button type="button" id="save-changes" class="btn btn-primary">
+					Save changes
+				</button>
 			</div>
 		</div>
 	</div>
@@ -310,6 +412,32 @@
 </script>
 <script>
 	$(document).ready(function () {
+		$(document).on("click", ".like-recipe", function () {
+			var recipeId = $(this).data("recipe-id");
+			var $button = $(this);
+			$.ajax({
+				url: "{% url 'like-recipe' %}",
+				method: "POST",
+				headers: { "X-CSRFToken": csrfToken },
+				data: {
+					recipe_id: recipeId,
+				},
+				success: function (response) {
+					if (response.success) {
+						// Update the UI to indicate that the recipe was liked
+						$button.removeClass("like-recipe").addClass("unlike-recipe");
+                        var recipeCount = parseInt($("#v-pills-home-tab").text().match(/\d+/)[0]) + 1;
+                        $("#v-pills-home-tab").html("Liked recipes (" + recipeCount + ")");
+					} else {
+						alert("Error: could not add recipe to liked recipes");
+					}
+				},
+				error: function () {
+					alert("Error: could not add recipe to liked recipes");
+				},
+			});
+		});
+
 		$(document).on("click", ".unlike-recipe", function () {
 			var recipeId = $(this).data("recipe-id");
 			var $button = $(this);
@@ -327,10 +455,8 @@
 						// Reload the container div with all the recipes
 						$("#container").load(location.href + " #container", function () {
 							// Update the button with the new recipe count
-							var recipeCount = $("#container").find(".card").length;
-							$("#v-pills-home-tab").text(
-								"Liked recipes (" + recipeCount + ")"
-							);
+							var recipeCount = parseInt($("#v-pills-home-tab").text().match(/\d+/)[0]) - 1;
+                            $("#v-pills-home-tab").html("Liked recipes (" + recipeCount + ")");
 						});
 					} else {
 						alert("Error: could not remove recipe from liked recipes");
@@ -354,7 +480,7 @@
 				success: function (response) {
 					if (response.success) {
 						$(".modal").modal("show");
-                        $("#change-password").val("");
+						$("#change-password").val("");
 					} else {
 						$(".modal").modal("hide");
 					}
@@ -362,78 +488,200 @@
 			});
 		});
 
-        $("#save-changes").on("click", function () {
-            var new_password = $("#new-password").val();
-            var confirm_password = $("#confirm-password").val();
-            $.ajax({
-                url: "{% url 'change-password' %}",
-                type: "POST",
-                data: {
-                    "new_password": new_password,
-                    "confirm_password": confirm_password,
-                    "csrfmiddlewaretoken": "{{ csrf_token }}"
-                },
-                success: function(response) {
-                    if (response.success) {
-                        alert("Password changed successfully!");
-                    } else {
-                        alert(response.message);
-                    }
-                },
-                error: function() {
-                    alert("Error: Could not change password.");
-                }
-            });
-        });
-        // On clicking the save button
-        $('#submit-btn').click(function() {
-            // Get the input field values
-            var username = $("#username").val().trim();
-            var phoneNumber = $("#number").val().trim();
-            var height = $("#height").val().trim();
-            var weight = $("#weight").val().trim();
-            
-            // Validate the input fields
-            var errors = '';
-            if (username == '') {
-                errors += 'Please enter a valid username.';
-            }
-            if (phoneNumber == '') {
-                errors += 'Please enter a valid phone number.';
-            }
-            if (height == '') {
-                errors += 'Please enter a valid height.';
-            }
-            if (weight == '') {
-                errors += 'Please enter a valid weight.';
-            }
-            // Display error messages if any
-            if (errors != '') {
-                $('.error-messages').html(errors);
-                return false;
-            }
-            
-            // If all fields are valid, send an AJAX request to update the database
-            $.ajax({
-                type: 'POST',
-                url: "{% url 'update-user' %}",
-                data: {
-                    'username': username,
-                    'phoneNumber': phoneNumber,
-                    'height': height,
-                    'weight': weight,
-                    "csrfmiddlewaretoken": "{{ csrf_token }}"
-                },
-                success: function(response) {
-                    // Display success message
-                    alert('User information updated successfully!');
-                },
-                error: function(xhr, status, error) {
-                    // Display error message
-                    alert('An error occurred while updating user information');
-                }
-            });
-        });
+		$("#save-changes").on("click", function () {
+			var new_password = $("#new-password").val();
+			var confirm_password = $("#confirm-password").val();
+			$.ajax({
+				url: "{% url 'change-password' %}",
+				type: "POST",
+				data: {
+					new_password: new_password,
+					confirm_password: confirm_password,
+					csrfmiddlewaretoken: "{{ csrf_token }}",
+				},
+				success: function (response) {
+					if (response.success) {
+						alert("Password changed successfully!");
+					} else {
+						alert(response.message);
+					}
+				},
+				error: function () {
+					alert("Error: Could not change password.");
+				},
+			});
+		});
+		// On clicking the save button
+		$("#submit-btn").click(function () {
+			// Get the input field values
+			var username = $("#username").val().trim();
+			var phoneNumber = $("#number").val().trim();
+			var height = $("#height").val().trim();
+			var weight = $("#weight").val().trim();
+
+			// Validate the input fields
+			var errors = "";
+			if (username == "") {
+				errors += "Please enter a valid username.";
+			}
+			if (phoneNumber == "") {
+				errors += "Please enter a valid phone number.";
+			}
+			if (height == "") {
+				errors += "Please enter a valid height.";
+			}
+			if (weight == "") {
+				errors += "Please enter a valid weight.";
+			}
+			// Display error messages if any
+			if (errors != "") {
+				$(".error-messages").html(errors);
+				return false;
+			}
+
+			// If all fields are valid, send an AJAX request to update the database
+			$.ajax({
+				type: "POST",
+				url: "{% url 'update-user' %}",
+				data: {
+					username: username,
+					phoneNumber: phoneNumber,
+					height: height,
+					weight: weight,
+					csrfmiddlewaretoken: "{{ csrf_token }}",
+				},
+				success: function (response) {
+					// Display success message
+					alert("User information updated successfully!");
+					location.reload();
+				},
+				error: function (xhr, status, error) {
+					// Display error message
+					alert("An error occurred while updating user information");
+				},
+			});
+		});
 	});
+
+	$(document).on("click", ".add-to-cookbook", function () {
+		var recipeId = $(this).data("recipe-id");
+		var $button = $(this);
+		var $i = $($button).find("i");
+		$.ajax({
+			url: "{% url 'add-to-cookbook' %}",
+			method: "POST",
+			headers: { "X-CSRFToken": csrfToken },
+			data: {
+				recipe_id: recipeId,
+			},
+			success: function (response) {
+				if (response.success) {
+					// Update the UI to indicate that the recipe was liked
+					$button
+						.removeClass("add-to-cookbook")
+						.addClass("remove-from-cookbook");
+					$i.removeClass("fa-plus").addClass("fa-check");
+                    var recipeCount = parseInt($("#v-pills-profile-tab").text().match(/\d+/)[0]) + 1;
+                    $("#v-pills-profile-tab").html("Cookbook (" + recipeCount + ")");
+				} else {
+					alert("Error: could not add recipe to cookbook");
+				}
+			},
+			error: function () {
+				alert("Error: could not add recipe to cookbook");
+			},
+		});
+	});
+
+	function loadRecipes() {
+		var recipes = $(".cookbook");
+		var currentIndex = 0;
+        var animateSpeed = 500;
+
+		function showRecipe(index) {
+        recipes.fadeOut(animateSpeed);
+        setTimeout(function() {
+            recipes.eq(index).fadeIn(animateSpeed);
+        }, animateSpeed);
+    }
+
+		function showPagination() {
+			var pagination = $("#pagination");
+			pagination.empty();
+			if (recipes.length > 1) {
+				pagination.show();
+				var prevButton = $("<button>")
+					.addClass("btn btn-secondary mx-3 prev")
+					.html("&larr;");
+				var nextButton = $("<button>")
+					.addClass("btn btn-secondary mx-3 next")
+					.html("&rarr;");
+				pagination.append(prevButton);
+				pagination.append(nextButton);
+
+				prevButton.on("click", function () {
+					currentIndex--;
+					if (currentIndex < 0) {
+						currentIndex = recipes.length - 1;
+					}
+					showRecipe(currentIndex);
+				});
+
+				nextButton.on("click", function () {
+					currentIndex++;
+					if (currentIndex >= recipes.length) {
+						currentIndex = 0;
+					}
+					showRecipe(currentIndex);
+				});
+			} else {
+				pagination.hide();
+			}
+		}
+
+		showRecipe(currentIndex);
+		showPagination();
+	}
+
+	$(document).on("click", ".remove-from-cookbook", function () {
+		var recipeId = $(this).data("recipe-id");
+		var $button = $(this);
+		var $i = $($button).find("i");
+		$.ajax({
+			url: "{% url 'remove-from-cookbook' %}",
+			method: "POST",
+			headers: { "X-CSRFToken": csrfToken },
+			data: {
+				recipe_id: recipeId,
+			},
+			success: function (response) {
+				if (response.success) {
+					// Update the UI to indicate that the recipe was liked
+					$button
+						.removeClass("remove-from-cookbook")
+						.addClass("add-to-cookbook");
+					$i.removeClass("fa-check").addClass("fa-plus");
+                    $button.closest(".cookbook").fadeOut(function() {
+                        $(".next").click();
+                    });
+                    var recipeCount = parseInt($("#v-pills-profile-tab").text().match(/\d+/)[0]) - 1;
+                    $("#v-pills-profile-tab").html("Cookbook (" + recipeCount + ")");
+				} else {
+					alert("Error: could not remove recipe from cookbook");
+				}
+			},
+			error: function () {
+				alert("Error: could not remove recipe from cookbook");
+			},
+		});
+	});
+
+	$(document).ready(function () {
+		loadRecipes();
+	});
+
+    $(".btn-dark").on("click", function() {
+        location.reload()
+    })
 </script>
 {% endblock %}

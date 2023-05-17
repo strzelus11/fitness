@@ -23,16 +23,128 @@
 					class="btn btn-primary btn-card-bottom"
 					>View recipe</a
 				>
+                {% if user.is_authenticated %}
                 {% if recipe.id in liked_recipes %}
-                <button class="unlike-recipe" data-recipe-id="{{ recipe.id }}"><i class="fa fa-heart"></i></button>
+                    <button class="unlike-recipe" data-recipe-id="{{ recipe.id }}"><i class="fa fa-heart"></i></button>
                 {% else %}
                     <button class="like-recipe" data-recipe-id="{{ recipe.id }}"><i class="fa fa-heart"></i></button>   
                 {% endif %} 
-                <button class="plus" data-recipe-id="{{ recipe.id }}"><i class="fa fa-plus"></i></button>
-                <!-- <a class="check" href=""><i class="fa fa-check"></i></a> -->
+                {% if recipe.id in cookbook %}
+                    <button class="remove-from-cookbook" data-recipe-id="{{ recipe.id }}"><i class="fa fa-check"></i></button>
+                {% else %}
+                    <button class="add-to-cookbook" data-recipe-id="{{ recipe.id }}"><i class="fa fa-plus"></i></button>
+                {% endif %}
+            {% endif %}
 			</div>
 		</div>
 	</div>
 	{% endfor %}
 </div>
+<script>
+    const csrfToken = "{{ csrf_token }}";
+</script>
+
+<script>
+    $(document).ready(function() {
+        $(document).on('click', '.like-recipe', function() {
+            var recipeId = $(this).data('recipe-id');
+            var $button = $(this);
+            $.ajax({
+                url: "{% url 'like-recipe' %}",
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                data: {
+                    recipe_id: recipeId,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the UI to indicate that the recipe was liked
+                        $button.removeClass('like-recipe').addClass('unlike-recipe');
+                    } else {
+                        alert('Error: could not add recipe to liked recipes');
+                    }
+                },
+                error: function() {
+                    alert('Error: could not add recipe to liked recipes');
+                }
+            });
+        });
+        
+        $(document).on('click', '.unlike-recipe', function() {
+            var recipeId = $(this).data('recipe-id');
+            var $button = $(this);
+            $.ajax({
+                url: "{% url 'unlike-recipe' %}",
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                data: {
+                    recipe_id: recipeId,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the UI to indicate that the recipe was liked
+                        $button.removeClass('unlike-recipe').addClass('like-recipe');
+                    } else {
+                        alert('Error: could not remove recipe from liked recipes');
+                    }
+                },
+                error: function() {
+                    alert('Error: could not remove recipe from liked recipes');
+                }
+            });
+        });
+
+        $(document).on('click', '.add-to-cookbook', function() {
+            var recipeId = $(this).data('recipe-id');
+            var $button = $(this);
+            var $i = $($button).find("i");
+            $.ajax({
+                url: "{% url 'add-to-cookbook' %}",
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                data: {
+                    recipe_id: recipeId,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the UI to indicate that the recipe was liked
+                        $button.removeClass('add-to-cookbook').addClass('remove-from-cookbook');
+                        $i.removeClass('fa-plus').addClass('fa-check');
+                    } else {
+                        alert('Error: could not add recipe to cookbook');
+                    }
+                },
+                error: function() {
+                    alert('Error: could not add recipe to cookbook');
+                }
+            });
+        });
+
+        $(document).on('click', '.remove-from-cookbook', function() {
+            var recipeId = $(this).data('recipe-id');
+            var $button = $(this);
+            var $i = $($button).find("i");
+            $.ajax({
+                url: "{% url 'remove-from-cookbook' %}",
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                data: {
+                    recipe_id: recipeId,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the UI to indicate that the recipe was liked
+                        $button.removeClass('remove-from-cookbook').addClass('add-to-cookbook');
+                        $i.removeClass('fa-check').addClass('fa-plus');
+                    } else {
+                        alert('Error: could not remove recipe from cookbook');
+                    }
+                },
+                error: function() {
+                    alert('Error: could not remove recipe from cookbook');
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

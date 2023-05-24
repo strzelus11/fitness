@@ -52,3 +52,13 @@ class Cookbook(models.Model):
 
     class Meta:
         unique_together = ('user', 'recipe')
+
+
+class Exercise(models.Model):
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=50)
+    video_link = models.URLField()
+    description = models.TextField()
+
+    def __str__(self):
+        return self.name

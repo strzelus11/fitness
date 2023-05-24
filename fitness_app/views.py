@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.contrib import messages
 from django.core.paginator import Paginator
-from .models import CustomUser, Recipe, LikedRecipe, Cookbook
+from .models import CustomUser, Recipe, LikedRecipe, Cookbook, Exercise
 from unslugify import unslugify
 
 def index(request):
@@ -208,6 +208,14 @@ def change_password(request):
             user.set_password(new_password)
             user.save()
             return JsonResponse({'success': True})
+        
+
+@login_required
+def exercises(request):
+    exercises = Exercise.objects.all().order_by('-id')
+    return render(request, "fitness_app/exercises.html", {
+        "exercises": exercises
+    })
 
 
 def register(request):

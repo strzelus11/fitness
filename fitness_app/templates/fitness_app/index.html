@@ -5,7 +5,10 @@
 	<div class="alert alert-warning">{{ message }}</div>
 	{% endfor %}
 </div>
-<h2><strong>@{{ user.username }}</strong></h2>
+<div class="text-center">
+    <img src="{{ user.profile_picture.url }}" class="img-thumbnail" alt="{{ user.username }}" style="width: 200px; height: 200px; object-fit: cover;">
+    <h2 class="my-3"><strong>@{{ user.username }}</strong></h2>
+</div>
 <br />
 <nav>
 	<div class="nav nav-tabs mb-5" id="nav-tab" role="tablist">
@@ -98,9 +101,9 @@
 					<div class="list-group mx-5" id="container">
                         {% if recipes %}
 						{% for recipe in recipes %}
-                            <a href="#" class="list-group-item list-group-item-action">
+                            <div class="list-group-item list-group-item-action">
                                 <div class="d-flex w-100 justify-content-between">
-                                <h5 class="mb-1 item">{{ recipe.title }}</h5>
+                                <a class="title-link" href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"><h5 class="mb-1 item">{{ recipe.title }}</h5></a>
                                 {% if recipe.id in liked_ids %}
                                 <button class="unlike-recipe" data-recipe-id="{{ recipe.id }}">
                                     <i class="fa fa-heart"></i>
@@ -113,8 +116,8 @@
                                 </div>
                                 {% for category in recipe.categories %}
 							<small>{{ category }}</small>
-							{% endfor %}
-                            </a>
+                            {% endfor %}
+                        </div>
                         {% endfor %}
                         {% endif %}
                     </div>

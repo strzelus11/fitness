@@ -1,0 +1,57 @@
+{% extends "fitness_app/layout.html" %} {% block title %} Exercises {% endblock %} 
+{% block body %}
+    <button id="exercise-btn" class="add-btn"><i class="fa fa-plus"></i></button>
+    <div id="exercise-form-container" style="display: none;" class="w-75 mt-5">
+        <form id="exercise-form">
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Name</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="exercise-name" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Type</label>
+                <div class="col-sm-10">
+                <select class="form-control" name="muscle_group">
+                    <option value="" selected disabled>Choose Type</option>
+                    <option value="chest">Chest</option>
+                    <option value="back">Back</option>
+                    <option value="legs">Legs</option>
+                    <option value="biceps">Biceps</option>
+                    <option value="triceps">Triceps</option>
+                </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Video link</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="exercise-type">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Description</label>
+                <div class="col-sm-10">
+                <textarea class="form-control" id="exercise-description" required></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <div class="text-center m-5">
+        {% for exercise in exercises %}
+            <div>
+                <h2>{{ exercise.name }}</h2>
+            </div>
+            <video playsinline preload="metadata" muted autoplay loop class="workout-img" src="{{ exercise.video_link }}"></video>
+        {% empty %}
+            <h2>No exercises yet.</h2>
+        {% endfor %}
+    </div>
+    <script>
+        $(document).ready(function() {
+            $("#exercise-btn").on("click", function() {
+                $("#exercise-form-container").fadeToggle();
+            });
+        });
+    </script>
+{% endblock %}

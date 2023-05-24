@@ -161,3 +161,16 @@ width: 100px;
 .item {
     padding-right: 4em;
 }
+
+.add-btn {
+    font-size: 3em;
+	color: green;
+	border: none;
+	background-color: inherit;
+}
+
+.workout-img {
+    width: 800px;
+    height: auto;
+    object-fit: contain;
+}

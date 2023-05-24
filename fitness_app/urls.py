@@ -16,6 +16,7 @@ urlpatterns = [
     path('update-user', views.update_user, name='update-user'),
     path('add-to-cookbook', views.add_to_cookbook, name='add-to-cookbook'),
     path('remove-from-cookbook', views.remove_from_cookbook, name='remove-from-cookbook'),
+    path('exercises', views.exercises, name='exercises'),
 
     path('register', views.register, name='register'),
     path("login", views.login_view, name="login"),

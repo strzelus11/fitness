@@ -1,7 +1,7 @@
 {% extends "fitness_app/layout.html" %} {% block title %} Exercises {% endblock %} 
 {% block body %}
-    <button id="exercise-btn" class="add-btn"><i class="fa fa-plus"></i></button>
-    <div id="exercise-form-container" style="display: none;" class="w-75 mt-5">
+    <button id="exercise-btn" class="add-btn">Add new exercise <i class="fa fa-plus"></i></button>
+    <div id="exercise-form-container" style="display: none;" class="w-75 mt-5 add-form">
         <form id="exercise-form">
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Name</label>
@@ -14,18 +14,19 @@
                 <div class="col-sm-10">
                 <select class="form-control" name="muscle_group">
                     <option value="" selected disabled>Choose Type</option>
-                    <option value="chest">Chest</option>
-                    <option value="back">Back</option>
-                    <option value="legs">Legs</option>
-                    <option value="biceps">Biceps</option>
-                    <option value="triceps">Triceps</option>
+                    <option value="Chest">Chest</option>
+                    <option value="Back">Back</option>
+                    <option value="Abs">Abs</option>
+                    <option value="Legs">Legs</option>
+                    <option value="Biceps">Biceps</option>
+                    <option value="Triceps">Triceps</option>
                 </select>
                 </div>
             </div>
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Video link</label>
                 <div class="col-sm-10">
-                <input type="text" class="form-control" id="exercise-type">
+                <input type="text" class="form-control" id="exercise-video">
                 </div>
             </div>
             <div class="row mb-3">
@@ -37,21 +38,192 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
-    <div class="text-center m-5">
-        {% for exercise in exercises %}
-            <div>
-                <h2>{{ exercise.name }}</h2>
-            </div>
-            <video playsinline preload="metadata" muted autoplay loop class="workout-img" src="{{ exercise.video_link }}"></video>
-        {% empty %}
-            <h2>No exercises yet.</h2>
-        {% endfor %}
-    </div>
+    <hr>
+    <div class="row text-center" id="exercises-div">
+	{% for exercise in exercises %}
+	<div class="col-md-4 my-3">
+		<div class="card h-100">
+			<a
+				class="title-link"
+				href="{% url 'exercise' id=exercise.id name=exercise.name|slugify %}"
+				><video playsinline preload="metadata" muted autoplay loop class="card-img-top" src="{{ exercise.video_link }}"></video></a>
+			<div class="card-body text-center" style="padding-bottom: 6em">
+				<a
+					class="title-link"
+					href="{% url 'exercise' id=exercise.id name=exercise.name|slugify %}"
+					><h5 class="card-title fw-bold">{{ exercise.name }}</h5></a
+				>
+				<a href="#" class="card-link">{{ exercise.type }}</a>
+				<a
+					href="{% url 'exercise' id=exercise.id name=exercise.name|slugify %}"
+					class="btn btn-primary btn-card-bottom"
+					>View exercise</a
+				>
+			</div>
+            {% if user.is_authenticated %}
+                {% if exercise.id in liked_exercises %}
+                    <button class="unlike-exercise" data-exercise-id="{{ exercise.id }}"><i class="fa fa-heart"></i></button>
+                {% else %}
+                    <button class="like-exercise" data-exercise-id="{{ exercise.id }}"><i class="fa fa-heart"></i></button>   
+                {% endif %} 
+                {% if exercise.id in training %}
+                    <button class="remove-from-training" data-exercise-id="{{ exercise.id }}"><i class="fa fa-check"></i></button>
+                {% else %}
+                    <button class="add-to-training" data-exercise-id="{{ exercise.id }}"><i class="fa fa-plus"></i></button>
+                {% endif %}
+            {% endif %}
+		</div>
+	</div>
+	{% endfor %}
+</div>
+<script>
+    const csrfToken = "{{ csrf_token }}";
+</script>
     <script>
-        $(document).ready(function() {
-            $("#exercise-btn").on("click", function() {
-                $("#exercise-form-container").fadeToggle();
+    $(document).ready(function() {
+        $("#exercise-btn").click(function() {
+            $("#exercise-form-container").fadeToggle();
+        });
+    });
+
+    $(document).ready(function() {
+        // Handle form submission
+        $('#exercise-form').submit(function(event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Get form data
+            var formData = {
+                name: $('#exercise-name').val(),
+                type: $('select[name="muscle_group"]').val(),
+                video_link: $('#exercise-video').val(),
+                description: $('#exercise-description').val()
+            };
+
+            // Send form data using AJAX
+            $.ajax({
+                method: 'POST',
+                url: "{% url 'add-exercise' %}",
+                headers: { 'X-CSRFToken': csrfToken },
+                data: JSON.stringify(formData),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function(response) {
+                    // Handle success response
+                    console.log(response);
+                    // Perform any additional actions
+                    $('#exercise-form').fadeOut();
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    // Handle error response
+                    console.log(xhr.responseText);
+                    // Perform any error handling
+                }
             });
         });
+    });
+
+    $(document).ready(function() {
+        $(document).on('click', '.like-exercise', function() {
+            var exerciseId = $(this).data('exercise-id');
+            var $button = $(this);
+            $.ajax({
+                url: "{% url 'like-exercise' %}",
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                data: {
+                    exercise_id: exerciseId,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the UI to indicate that the exercise was liked
+                        $button.removeClass('like-exercise').addClass('unlike-exercise');
+                    } else {
+                        alert('Error: could not add exercise to liked exercises');
+                    }
+                },
+                error: function() {
+                    alert('Error: could not add exercise to liked exercises');
+                }
+            });
+        });
+        
+        $(document).on('click', '.unlike-exercise', function() {
+            var exerciseId = $(this).data('exercise-id');
+            var $button = $(this);
+            $.ajax({
+                url: "{% url 'unlike-exercise' %}",
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                data: {
+                    exercise_id: exerciseId,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the UI to indicate that the exercise was liked
+                        $button.removeClass('unlike-exercise').addClass('like-exercise');
+                    } else {
+                        alert('Error: could not remove exercise from liked exercises');
+                    }
+                },
+                error: function() {
+                    alert('Error: could not remove exercise from liked exercises');
+                }
+            });
+        });
+
+        $(document).on('click', '.add-to-training', function() {
+            var exerciseId = $(this).data('exercise-id');
+            var $button = $(this);
+            var $i = $($button).find("i");
+            $.ajax({
+                url: "{% url 'add-to-training' %}",
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                data: {
+                    exercise_id: exerciseId,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the UI to indicate that the exercise was liked
+                        $button.removeClass('add-to-training').addClass('remove-from-training');
+                        $i.removeClass('fa-plus').addClass('fa-check');
+                    } else {
+                        alert('Error: could not add exercise to training');
+                    }
+                },
+                error: function() {
+                    alert('Error: could not add exercise to training');
+                }
+            });
+        });
+
+        $(document).on('click', '.remove-from-training', function() {
+            var exerciseId = $(this).data('exercise-id');
+            var $button = $(this);
+            var $i = $($button).find("i");
+            $.ajax({
+                url: "{% url 'remove-from-training' %}",
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                data: {
+                    exercise_id: exerciseId,
+                },
+                success: function(response) {
+                    if (response.success) {
+                        // Update the UI to indicate that the exercise was liked
+                        $button.removeClass('remove-from-training').addClass('add-to-training');
+                        $i.removeClass('fa-check').addClass('fa-plus');
+                    } else {
+                        alert('Error: could not remove exercise from training');
+                    }
+                },
+                error: function() {
+                    alert('Error: could not remove exercise from training');
+                }
+            });
+        });
+    });
     </script>
 {% endblock %}

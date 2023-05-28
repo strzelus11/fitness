@@ -8,24 +8,36 @@ from django.urls import reverse
 from django.template.defaultfilters import slugify
 from django.contrib import messages
 from django.core.paginator import Paginator
-from .models import CustomUser, Recipe, LikedRecipe, Cookbook, Exercise
+from .models import CustomUser, Recipe, LikedRecipe, Cookbook, Exercise, LikedExercise, Training
 from unslugify import unslugify
+import json
 
 def index(request):
     user = request.user
     try:
         liked_recipes_list = LikedRecipe.objects.filter(user=user).values_list('recipe', flat=True)
+        liked_exercises_list = LikedExercise.objects.filter(user=user).values_list('exercise', flat=True)
         liked_recipes = Recipe.objects.filter(id__in=liked_recipes_list)
+        liked_exercises = Exercise.objects.filter(id__in=liked_exercises_list)
         cookbook_list = Cookbook.objects.filter(user=user).values_list('recipe', flat=True)
-        cookbook_ids = cookbook_list.values_list('recipe__id', flat=True)
-        liked_ids = liked_recipes_list.values_list('recipe__id', flat=True)
+        training_list = Training.objects.filter(user=user).values_list('exercise__id', flat=True)
+        cookbook_ids = cookbook_list
+        training_ids = training_list
+        liked_ids = liked_recipes_list
+        liked_exercises_ids = liked_exercises_list
         cookbook = Recipe.objects.filter(id__in=cookbook_list)
+        training = Exercise.objects.filter(id__in=training_list)
+
         return render(request, "fitness_app/index.html", {
             "user": user,
             "recipes": liked_recipes,
+            "exercises": liked_exercises,
             'cookbook_ids': cookbook_ids,
+            'training_ids': training_ids,
             "liked_ids": liked_ids,
-            "cookbook": cookbook
+            "liked_exercises_ids": liked_exercises_ids,
+            "cookbook": cookbook,
+            "training": training
         })
     except TypeError:
         return render(request, "fitness_app/index.html")   
@@ -113,13 +125,13 @@ def search(request):
 def search_results(request, search_type, query):
     if search_type == 'recipes':
         search_results = Recipe.objects.filter(title__icontains=query)
-    # elif search_type == 'exercises':
-        # search_results = Exercise.objects.filter(name__icontains=query)
+    elif search_type == 'exercises':
+        search_results = Exercise.objects.filter(name__icontains=query)
     else:
         search_results = []
 
     return render(request, 'fitness_app/search.html', {
-        'recipes': search_results,
+        'data': search_results,
         'query': query,
         'search_type': search_type
         })
@@ -180,13 +192,15 @@ def validate_password(request):
 
 @login_required
 def update_user(request):
-    user = request.user 
+    user = request.user
+    image = request.POST.get('profileImage')
     username = request.POST.get('username')
     phoneNumber = request.POST.get('phoneNumber')
     height = request.POST.get('height')
     weight = request.POST.get('weight')
 
     user.username = username
+    user.profile_picture = image
     user.phone_number = phoneNumber
     user.height = height
     user.weight = weight
@@ -210,12 +224,102 @@ def change_password(request):
             return JsonResponse({'success': True})
         
 
-@login_required
 def exercises(request):
     exercises = Exercise.objects.all().order_by('-id')
-    return render(request, "fitness_app/exercises.html", {
-        "exercises": exercises
+    user = request.user
+    try:
+        liked_exercises = LikedExercise.objects.filter(user=user).values_list('exercise', flat=True)
+        training = Training.objects.filter(user=user).values_list('exercise', flat=True)
+        return render(request, 'fitness_app/exercises.html', {
+            'liked_exercises': liked_exercises,
+            'training': training,
+            'exercises': exercises
+        })
+    except TypeError:
+        return render(request, 'fitness_app/exercises.html', {
+            'exercises': exercises
+        })
+
+
+def exercise(request, id, name):
+    exercise = Exercise.objects.get(id=id)
+    return render(request, "fitness_app/exercise.html", {
+        "exercise": exercise
     })
+
+
+def add_exercise(request):
+    if request.method == 'POST':
+        # Retrieve form data from AJAX request
+        data = json.loads(request.body)
+        name = data.get('name')
+        type = data.get('type')
+        video_link = data.get('video_link')
+        description = data.get('description').splitlines()
+
+        # Perform database update
+        exercise = Exercise.objects.create(
+            name=name,
+            type=type,
+            video_link=video_link,
+            description=description
+        )
+
+        # Return a JSON response indicating success
+        response = {
+            'status': 'success',
+            'message': 'Exercise updated successfully'
+        }
+        return JsonResponse(response)
+
+    # Return a JSON response indicating an error for unsupported request methods
+    response = {
+        'status': 'error',
+        'message': 'Invalid request method'
+    }
+    return JsonResponse(response)
+
+
+@login_required
+def like_exercise(request):
+    if request.method == 'POST':
+        exercise_id = request.POST.get('exercise_id')
+        exercise = Exercise.objects.get(id=exercise_id)
+        liked_exercise = LikedExercise(user=request.user, exercise=exercise)
+        liked_exercise.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+@login_required
+def unlike_exercise(request):
+    if request.method == 'POST':
+        exercise_id = request.POST.get('exercise_id')
+        exercise = get_object_or_404(Exercise, pk=exercise_id)
+        LikedExercise.objects.filter(user=request.user, exercise=exercise).delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+@login_required
+def add_to_training(request):
+    if request.method == 'POST':
+        exercise_id = request.POST.get('exercise_id')
+        exercise = Exercise.objects.get(id=exercise_id)
+        liked_recipe = Training(user=request.user, exercise=exercise)
+        liked_recipe.save()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
+
+
+@login_required
+def remove_from_training(request):
+    if request.method == 'POST':
+        exercise_id = request.POST.get('exercise_id')
+        exercise = get_object_or_404(Exercise, pk=exercise_id)
+        Training.objects.filter(user=request.user, exercise=exercise).delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False})
 
 
 def register(request):

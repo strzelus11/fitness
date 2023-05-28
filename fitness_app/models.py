@@ -58,7 +58,24 @@ class Exercise(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=50)
     video_link = models.URLField()
-    description = models.TextField()
+    description = models.JSONField(default=dict)
 
     def __str__(self):
         return self.name
+    
+
+class LikedExercise(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'exercise')
+
+
+class Training(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ('user', 'exercise')

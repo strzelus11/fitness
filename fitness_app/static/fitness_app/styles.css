@@ -110,7 +110,27 @@ html {
 	background-color: inherit;
 }
 
+.like-exercise {
+	position: absolute;
+	font-size: 1.5em;
+	bottom: 20px;
+	right: 50px;
+	color: grey;
+	border: none;
+	background-color: inherit;
+}
+
 .unlike-recipe {
+	position: absolute;
+	font-size: 1.5em;
+	bottom: 20px;
+	right: 50px;
+	color: red;
+	border: none;
+	background-color: inherit;
+}
+
+.unlike-exercise {
 	position: absolute;
 	font-size: 1.5em;
 	bottom: 20px;
@@ -130,7 +150,27 @@ html {
 	background-color: inherit;
 }
 
+.add-to-training {
+	position: absolute;
+	font-size: 1.5em;
+	bottom: 20px;
+	left: 50px;
+	color: grey;
+	border: none;
+	background-color: inherit;
+}
+
 .remove-from-cookbook {
+	position: absolute;
+	font-size: 1.5em;
+	bottom: 20px;
+	left: 50px;
+	color: green;
+	border: none;
+	background-color: inherit;
+}
+
+.remove-from-training {
 	position: absolute;
 	font-size: 1.5em;
 	bottom: 20px;
@@ -163,14 +203,26 @@ width: 100px;
 }
 
 .add-btn {
-    font-size: 3em;
+    font-size: 1.25em;
 	color: green;
-	border: none;
-	background-color: inherit;
+	border: 2px solid green;
+    border-radius: 3em;
+    padding: 0.5em;
+	background-color: rgb(181, 234, 181);
 }
 
 .workout-img {
     width: 800px;
     height: auto;
     object-fit: contain;
+}
+
+.exercise-list li {
+    margin-bottom: 2em; 
+}
+
+.add-form {
+    border: 2px solid gray;
+    border-radius: 1em;
+    padding: 1em;
 }

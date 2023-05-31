@@ -128,4 +128,7 @@ STATIC_ROOT = BASE_DIR / 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+import os
+
 MEDIA_URL = '/profile_pictures/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'profile_pictures')

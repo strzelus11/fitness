@@ -76,6 +76,8 @@ class LikedExercise(models.Model):
 class Training(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    sets = models.IntegerField(null=True, blank=True)
+    reps = models.IntegerField(null=True, blank=True)
 
     class Meta:
         unique_together = ('user', 'exercise')

@@ -1,5 +1,7 @@
 from django.urls import path, re_path
 from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -23,6 +25,11 @@ urlpatterns = [
     path('add-to-training', views.add_to_training, name='add-to-training'),
     path('remove-from-training', views.remove_from_training, name='remove-from-training'),
     path('add-exercise', views.add_exercise, name='add-exercise'),
+    path('add-recipe', views.add_recipe, name='add-recipe'),
+    path('save-sets-reps/', views.save_sets_reps, name='save-sets-reps'),
+    path('types', views.types, name='types'),
+    path('exercises/<slug:type>', views.type, name='type'),
+
 
     path('register', views.register, name='register'),
     path("login", views.login_view, name="login"),

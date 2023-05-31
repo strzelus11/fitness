@@ -1,47 +1,6 @@
-{% extends "fitness_app/layout.html" %} {% block title %} Exercises {% endblock %} 
-{% block body %}
-    <button id="exercise-btn" class="btn btn-outline-success">Add new exercise <i class="fa fa-plus mx-2"></i></button>
-    <div id="exercise-form-container" style="display: none;" class="w-75 mt-5 add-form">
-        <form id="exercise-form">
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Name</label>
-                <div class="col-sm-10">
-                <input type="text" class="form-control" id="exercise-name" required>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Type</label>
-                <div class="col-sm-10">
-                <select class="form-control" name="muscle_group">
-                    <option value="" selected disabled>Choose Type</option>
-                    <option value="Chest">Chest</option>
-                    <option value="Back">Back</option>
-                    <option value="Abs">Abs</option>
-                    <option value="Legs">Legs</option>
-                    <option value="Biceps">Biceps</option>
-                    <option value="Triceps">Triceps</option>
-                    <option value="Shoulders">Shoulders</option>
-                </select>
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Video link</label>
-                <div class="col-sm-10">
-                <input type="text" class="form-control" id="exercise-video">
-                </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Description</label>
-                <div class="col-sm-10">
-                <textarea class="form-control" rows="4" cols="30" placeholder="Seperate each step by a new line (Enter/Return)." id="exercise-description" required></textarea>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Add</button>
-        </form>
-    </div>
-    <hr>
-    <div class="row text-center" id="exercises-div">
-        <h2><a href="{% url 'types' %}">All Types</a></h2>
+{% extends "fitness_app/layout.html" %} {% block title %} Types {% endblock %} {% block body %}
+<div class="row text-center" id="recipe-list">
+    <h2><strong>{{ type }} exercises</strong></h2>
 	{% for exercise in exercises %}
 	<div class="col-md-4 my-3">
 		<div class="card h-100">
@@ -58,7 +17,7 @@
 				<a href="{% url 'type' type=exercise.type|slugify %}" class="card-link">{{ exercise.type }}</a>
 				<a
 					href="{% url 'exercise' id=exercise.id name=exercise.name|slugify %}"
-					class="btn btn-primary btn-card-bottom view-recipe"
+					class="btn btn-primary btn-card-bottom"
 					>View exercise</a
 				>
 			</div>
@@ -81,51 +40,8 @@
 <script>
     const csrfToken = "{{ csrf_token }}";
 </script>
-    <script>
-    $(document).ready(function() {
-        $("#exercise-btn").click(function() {
-            $("#exercise-form-container").fadeToggle();
-        });
-    });
 
-    $(document).ready(function() {
-        // Handle form submission
-        $('#exercise-form').submit(function(event) {
-            // Prevent the default form submission
-            event.preventDefault();
-
-            // Get form data
-            var formData = {
-                name: $('#exercise-name').val(),
-                type: $('select[name="muscle_group"]').val(),
-                video_link: $('#exercise-video').val(),
-                description: $('#exercise-description').val()
-            };
-
-            // Send form data using AJAX
-            $.ajax({
-                method: 'POST',
-                url: "{% url 'add-exercise' %}",
-                headers: { 'X-CSRFToken': csrfToken },
-                data: JSON.stringify(formData),
-                dataType: 'json',
-                contentType: 'application/json',
-                success: function(response) {
-                    // Handle success response
-                    console.log(response);
-                    // Perform any additional actions
-                    $('#exercise-form').fadeOut();
-                    location.reload();
-                },
-                error: function(xhr, status, error) {
-                    // Handle error response
-                    console.log(xhr.responseText);
-                    // Perform any error handling
-                }
-            });
-        });
-    });
-
+<script>
     $(document).ready(function() {
         $(document).on('click', '.like-exercise', function() {
             var exerciseId = $(this).data('exercise-id');
@@ -227,5 +143,5 @@
             });
         });
     });
-    </script>
+</script>
 {% endblock %}

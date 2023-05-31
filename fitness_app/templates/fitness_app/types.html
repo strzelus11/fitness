@@ -1,0 +1,15 @@
+{% extends "fitness_app/layout.html" %} {% block title %} Types {% endblock %} {% block body %}
+<div class="row">
+	{% for type, count in type_counts.items %}
+	<div class="col-md-4 text-center">
+		<a href="{% url 'type' type|slugify %}">
+			<div class="card mb-4 shadow-sm">
+				<div class="card-body">
+					<h5 class="card-title">{{ type }} ({{ count }})</h5>
+				</div>
+			</div>
+		</a>
+	</div>
+	{% endfor %}
+</div>
+{% endblock %}

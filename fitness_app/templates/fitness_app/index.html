@@ -1,4 +1,4 @@
-{% extends "fitness_app/layout.html" %} {% block title %} Home {% endblock %} 
+{% extends "fitness_app/layout.html" %} {% block title %} Profile {% endblock %} 
 {% block body %} {% if user.is_authenticated %}
 <div>
 	{% for message in messages %}
@@ -6,8 +6,22 @@
 	{% endfor %}
 </div>
 <div class="text-center">
-    <img src="{{ user.profile_picture.url }}" class="img-thumbnail" alt="{{ user.username }}" style="width: 200px; height: 200px; object-fit: cover;">
-    <h2 class="my-3"><strong>@{{ user.username }}</strong></h2>
+    {% if user.profile_picture %}
+	<img
+		src="{{ user.profile_picture.url }}"
+		class="img-thumbnail"
+		alt="{{ user.username }}"
+		style="width: 200px; height: 200px; object-fit: cover"
+	/>
+    {% else %}
+    <img
+		src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+		class="img-thumbnail"
+		alt="{{ user.username }}"
+		style="width: 200px; height: 200px; object-fit: cover"
+	/>
+    {% endif %}
+	<h2 class="my-3"><strong>@{{ user.username }}</strong></h2>
 </div>
 <br />
 <nav>
@@ -99,670 +113,825 @@
 					tabindex="0"
 				>
 					<div class="list-group mx-5" id="container">
-                        {% if recipes %}
-						{% for recipe in recipes %}
-                            <div class="list-group-item list-group-item-action">
-                                <div class="d-flex w-100 justify-content-between">
-                                <a class="title-link" href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"><h5 class="mb-1 item">{{ recipe.title }}</h5></a>
-                                <button class="unlike-recipe" data-recipe-id="{{ recipe.id }}">
-                                    <i class="fa fa-heart"></i>
-                                </button>
-                                </div>
-                                {% for category in recipe.categories %}
+						{% if recipes %} {% for recipe in recipes %}
+						<div class="list-group-item list-group-item-action">
+							<div class="d-flex w-100 justify-content-between">
+								<a
+									class="title-link"
+									href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+									><h5 class="mb-1 item">{{ recipe.title }}</h5></a
+								>
+								<button class="unlike-recipe" data-recipe-id="{{ recipe.id }}">
+									<i class="fa fa-heart"></i>
+								</button>
+							</div>
+							{% for category in recipe.categories %}
 							<small>{{ category }}</small>
-                            {% endfor %}
-                        </div>
-                        {% endfor %}
-                        {% else %}
-                            <h2 class="col mb-5 mx-5">No liked recipes</h2>
-                        {% endif %}
-                    </div>
-			</div>
-			<div
-				class="tab-pane fade"
-				id="v-pills-profile"
-				role="tabpanel"
-				aria-labelledby="v-pills-profile-tab"
-				tabindex="0"
-			>
-            <div id="recipe-list">
-                {% if cookbook %}
-                <div class="d-flex justify-content-center mb-3">
-                    <h5>Refresh the page to remove from cookbook completely</h5>
-                    <button type="button" class="btn btn-dark mx-3">Refresh</button>
-                </div>
-					{% for recipe in cookbook %}
-					<div class="card h-100 recipe card-index cookbook">
-						<a
-							class="title-link"
-							href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
-							><img src="{{ recipe.image }}" class="card-img-top" alt="..."
-						/></a>
-						<div class="card-body text-center" style="padding-bottom: 6em">
+							{% endfor %}
+						</div>
+						{% endfor %} {% else %}
+						<h2 class="col mb-5 mx-5">No liked recipes</h2>
+						{% endif %}
+					</div>
+				</div>
+				<div
+					class="tab-pane fade"
+					id="v-pills-profile"
+					role="tabpanel"
+					aria-labelledby="v-pills-profile-tab"
+					tabindex="0"
+				>
+					<div id="recipe-list">
+						{% if cookbook %}
+						{% for recipe in cookbook %}
+						<div class="card h-100 recipe card-index cookbook">
 							<a
 								class="title-link"
 								href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
-								><h5 class="card-title fw-bold">{{ recipe.title }}</h5></a
+								><img src="{{ recipe.image }}" class="card-img-top" alt="..."
+							/></a>
+							<div class="card-body text-center" style="padding-bottom: 6em">
+								<a
+									class="title-link"
+									href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+									><h5 class="card-title fw-bold">{{ recipe.title }}</h5></a
+								>
+								{% for category in recipe.categories %}
+								<a
+									href="{% url 'category' category|slugify %}"
+									class="card-link"
+									>{{ category }}</a
+								>
+								{% endfor %}
+								<a
+									href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
+									class="btn btn-primary btn-card-bottom view-recipe"
+									>View recipe</a
+								>
+							</div>
+							{% if recipe.id in liked_ids %}
+							<button class="unlike-recipe" data-recipe-id="{{ recipe.id }}">
+								<i class="fa fa-heart"></i>
+							</button>
+							{% else %}
+							<button class="like-recipe" data-recipe-id="{{ recipe.id }}">
+								<i class="fa fa-heart"></i>
+							</button>
+							{% endif %} {% if recipe.id in cookbook_ids %}
+							<button
+								class="remove-from-cookbook"
+								data-recipe-id="{{ recipe.id }}"
 							>
-							{% for category in recipe.categories %}
-							<a href="{% url 'category' category|slugify %}" class="card-link"
-								>{{ category }}</a
-							>
-							{% endfor %}
-							<a
-								href="{% url 'recipe' id=recipe.id title=recipe.title|slugify %}"
-								class="btn btn-primary btn-card-bottom view-recipe"
-								>View recipe</a
-							>
+								<i class="fa fa-check"></i>
+							</button>
+							{% else %}
+							<button class="add-to-cookbook" data-recipe-id="{{ recipe.id }}">
+								<i class="fa fa-plus"></i>
+							</button>
+							{% endif %}
 						</div>
-						{% if recipe.id in liked_ids %}
-						<button class="unlike-recipe" data-recipe-id="{{ recipe.id }}">
-							<i class="fa fa-heart"></i>
-						</button>
-						{% else %}
-						<button class="like-recipe" data-recipe-id="{{ recipe.id }}">
-							<i class="fa fa-heart"></i>
-						</button>
-						{% endif %} {% if recipe.id in cookbook_ids %}
-						<button
-							class="remove-from-cookbook"
-							data-recipe-id="{{ recipe.id }}"
-						>
-							<i class="fa fa-check"></i>
-						</button>
-						{% else %}
-						<button class="add-to-cookbook" data-recipe-id="{{ recipe.id }}">
-							<i class="fa fa-plus"></i>
-						</button>
+						{% endfor %} {% else %}
+						<h2 class="col mb-5 mx-5">No recipes in cookbook</h2>
 						{% endif %}
-                    </div>
-                    {% endfor %}
-                    {% else %}
-                    <h2 class="col mb-5 mx-5">No recipes in cookbook</h2>
-                    {% endif %}
-                </div>
-                <div
-                id="pagination"
-                style="width: 75vw"
-                class="m-3 text-center"
-                ></div>
+					</div>
+					<div
+						id="pagination"
+						style="width: 75vw"
+						class="m-3 text-center"
+					></div>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
 
-<div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
-    <div class="row">
-        <div class="col-3">
-            <div class="nav flex-column nav-pills sidebar" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                <button class="nav-link active" id="v-pills-exercises-tab" data-bs-toggle="pill" data-bs-target="#v-pills-exercises" type="button" role="tab" aria-controls="v-pills-exercises" aria-selected="true">
-                    {% with exercises|length as exercise_count %} Liked exercises ({{ exercise_count }}) {% endwith %}
+	<div
+		class="tab-pane fade"
+		id="nav-profile"
+		role="tabpanel"
+		aria-labelledby="nav-profile-tab"
+		tabindex="0"
+	>
+		<div class="row">
+			<div class="col-3">
+				<div
+					class="nav flex-column nav-pills sidebar"
+					id="v-pills-tab"
+					role="tablist"
+					aria-orientation="vertical"
+				>
+					<button
+						class="nav-link active"
+						id="v-pills-exercises-tab"
+						data-bs-toggle="pill"
+						data-bs-target="#v-pills-exercises"
+						type="button"
+						role="tab"
+						aria-controls="v-pills-exercises"
+						aria-selected="true"
+					>
+						{% with exercises|length as exercise_count %} Liked exercises ({{ exercise_count }}) {% endwith %}
+					</button>
+					<button
+						class="nav-link"
+						id="v-pills-training-tab"
+						data-bs-toggle="pill"
+						data-bs-target="#v-pills-training"
+						type="button"
+						role="tab"
+						aria-controls="v-pills-training"
+						aria-selected="false"
+					>
+						{% with training|length as exercise_count %} Training ({{ exercise_count }}) {% endwith %}
+					</button>
+				</div>
+			</div>
+			<div class="col-9">
+				<div class="tab-content" id="v-pills-tabContent">
+					<div
+						class="tab-pane fade show active"
+						id="v-pills-exercises"
+						role="tabpanel"
+						aria-labelledby="v-pills-exercises-tab"
+						tabindex="0"
+					>
+						<div class="list-group mx-5" id="container">
+							{% if exercises %} {% for exercise in exercises %}
+							<div class="list-group-item list-group-item-action">
+								<div class="d-flex w-100 justify-content-between">
+									<a
+										class="title-link"
+										href="{% url 'exercise' id=exercise.id name=exercise.name|slugify %}"
+										><h5 class="mb-1 item">{{ exercise.name }}</h5></a
+									>
+									<button
+										class="unlike-exercise"
+										data-exercise-id="{{ exercise.id }}"
+									>
+										<i class="fa fa-heart"></i>
+									</button>
+								</div>
+								<small>{{ exercise.type }}</small>
+							</div>
+							{% endfor %} {% else %}
+                            <h2 class="col mb-5 mx-5">No liked exercises</h2>
+                            {% endif %}
+						</div>
+					</div>
+					<div
+						class="tab-pane fade"
+						id="v-pills-training"
+						role="tabpanel"
+						aria-labelledby="v-pills-training-tab"
+						tabindex="0"
+					>
+						<div id="exercise-list">
+							{% if training %}
+    {% for training_item in training %}
+        <div class="border-training">
+            <div style="position: relative" class="d-flex w-100 justify-content-between align-items-center">
+                <a class="title-link" href="{% url 'exercise' id=training_item.exercise.id name=training_item.exercise.name|slugify %}">
+                    <h5 class="mb-1 item">{{ training_item.exercise.name }}</h5>
+                </a>
+                <button class="remove-from-index-training" data-exercise-id="{{ training_item.exercise.id }}">
+                    <i class="fa fa-check"></i>
                 </button>
-                <button class="nav-link" id="v-pills-training-tab" data-bs-toggle="pill" data-bs-target="#v-pills-training" type="button" role="tab" aria-controls="v-pills-training" aria-selected="false">
-                    {% with training|length as exercise_count %} Training ({{ exercise_count }}) {% endwith %}
-                </button>
-            </div>
-        </div>
-        <div class="col-9">
-            <div class="tab-content" id="v-pills-tabContent">
-                <div class="tab-pane fade show active" id="v-pills-exercises" role="tabpanel" aria-labelledby="v-pills-exercises-tab" tabindex="0">
-                    <div class="list-group mx-5" id="container">
-                        {% if exercises %}
-                            {% for exercise in exercises %}
-                                <div class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <a class="title-link" href="{% url 'exercise' id=exercise.id name=exercise.name|slugify %}"><h5 class="mb-1 item">{{ exercise.name }}</h5></a>
-                                            <button class="unlike-exercise" data-exercise-id="{{ exercise.id }}">
-                                                <i class="fa fa-heart"></i>
-                                            </button>
-                                    </div>
-                                    <small>{{ exercise.type }}</small>
-                                </div>
-                            {% endfor %}
-                        {% endif %}
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="v-pills-training" role="tabpanel" aria-labelledby="v-pills-training-tab" tabindex="0">
-                    <div id="exercise-list">
-                        {% if training %}
-                            {% for exercise in training %}
-                                <div class="list-group-item list-group-item-action">
-                                    <div class="d-flex w-100 justify-content-between align-items-center">
-                                        <a class="title-link" href="{% url 'exercise' id=exercise.id name=exercise.name|slugify %}">
-                                            <h5 class="mb-1 item">{{ exercise.name }}</h5>
-                                        </a>
-                                        <div class="input-group sets-reps-input w-25 mx-5">
-                                            <input type="number" class="form-control" placeholder="Sets">
-                                            <div class="input-group-text">x</div>
-                                            <input type="number" class="form-control" placeholder="Reps">
-                                        </div>
-                                        <button style="left: 5em" class="remove-from-training" data-exercise-id="{{ exercise.id }}"><i class="fa fa-check"></i></button>
-                                    </div>
-                                    <small>{{ exercise.type }}</small>
-                                </div>
-                            {% endfor %}
-                        {% else %}
-                            <h2 class="col mb-5 mx-5">No exercises in training</h2>
-                        {% endif %}
-                    </div>
-                    <div id="pagination" style="width: 75vw" class="m-3 text-center"></div>
+                <div class="input-group sets-reps-input w-50">
+                    <form class="sets-reps-form" id="form-{{ training_item.exercise.id }}">
+                        <div class="input-group sets-reps-input">
+                            <input type="number" id="sets-{{ training_item.exercise.id }}" value="{{ training_item.sets }}" class="form-control" placeholder="Sets: {{ training_item.sets }}" name="sets" />
+                            <div class="input-group-text">x</div>
+                            <input type="number" id="reps-{{ training_item.exercise.id }}" value="{{ training_item.reps }}" class="form-control" placeholder="Reps: {{ training_item.reps }}" name="reps" />
+                            <button class="btn btn-outline-secondary" type="submit">Save</button>
+                        </div>
+                    </form>
                 </div>
             </div>
+            <small>{{ training_item.exercise.type }}</small>
         </div>
-    </div>
-</div>
-
-<div
-	class="tab-pane fade border border-secondary border-3 rounded p-3 mx-5"
-	id="nav-contact"
-	role="tabpanel"
-	aria-labelledby="nav-contact-tab"
-	tabindex="0"
->
-	<h3 class="mb-3">Your personal data:</h3>
-	<div class="alert alert-secondary" role="alert">
-		<strong>* Grayed out fields are non changeable</strong>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Email address</label>
-		<input
-			type="email"
-			class="form-control"
-			value="{{ user.email }}"
-			disabled
-			readonly
-		/>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Name</label>
-		<input
-			type="text"
-			class="form-control"
-			value="{{ user.first_name }}"
-			disabled
-			readonly
-		/>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Surname</label>
-		<input
-			type="text"
-			class="form-control"
-			value="{{ user.last_name }}"
-			disabled
-			readonly
-		/>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Profile photo</label>
-		<input
-			class="form-control"
-			type="file"
-			id="profileImage"
-			accept="image/*"
-			name="image"
-            value="{{ user.profile_picture }}"
-		/>
-        <span id="fileSelected"></span>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Username</label>
-		<input
-			type="username"
-			class="form-control"
-			id="username"
-			value="{{ user.username }}"
-		/>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Phone number</label>
-		<input
-			type="tel"
-			id="number"
-			class="form-control"
-			value="{{ user.phone_number }}"
-		/>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Age</label>
-		<input
-			type="number"
-			class="form-control"
-			value="{{ user.age }}"
-			disabled
-			readonly
-		/>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Height</label>
-		<input
-			type="number"
-			id="height"
-			class="form-control"
-			value="{{ user.height }}"
-		/>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Weight</label>
-		<input
-			type="number"
-			id="weight"
-			class="form-control"
-			value="{{ user.weight }}"
-		/>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Sex</label>
-		<input
-			type="text"
-			class="form-control"
-			value="{{ user.sex|title }}"
-			disabled
-			readonly
-		/>
-	</div>
-	<div class="mb-3">
-		<label class="form-label">Password</label>
-		<input
-			type="password"
-			id="change-password"
-			data-password="{{ user.password }}"
-			class="form-control"
-			placeholder="To change your password, please enter the previous one"
-		/>
-	</div>
-	<div class="d-flex">
-		<button
-			style="width: 6em; height: 3em"
-			type="submit"
-			id="submit-btn"
-			class="btn btn-secondary"
-		>
-			Save
-		</button>
-		<p class="error-messages"></p>
-	</div>
-</div>
-<div class="modal" tabindex="-1">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Change password</h5>
-				<button
-					type="button"
-					class="btn-close"
-					data-bs-dismiss="modal"
-					aria-label="Close"
-				></button>
-			</div>
-			<div class="modal-body">
-				<input
-					id="new-password"
-					type="password"
-					class="form-control mb-3"
-					placeholder="Enter new password"
-				/>
-				<input
-					id="confirm-password"
-					type="password"
-					class="form-control"
-					placeholder="Confirm new password"
-				/>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-					Close
-				</button>
-				<button type="button" id="save-changes" class="btn btn-primary">
-					Save changes
-				</button>
-			</div>
-		</div>
-	</div>
-</div>
+    {% endfor %}
 {% else %}
-<div class="text-center mx-5">
-	<h2 class="mb-5"><strong>You are not logged in</strong></h2>
-	<hr />
-	<br /><br />
-	<h3 class="mt-5">
-		Log In <span><a href="{% url 'login' %}">here</a></span>
-	</h3>
-	<br />
-	<h3>
-		Don't have an account? Register
-		<span><a href="{% url 'register' %}">here</a></span>
-	</h3>
-</div>
+    <h2 class="col mb-5 mx-5">No exercises in training</h2>
 {% endif %}
-<script>
-	const csrfToken = "{{ csrf_token }}";
-</script>
-<script>
-    $(document).ready(function() {
-        // Check if the user has an existing profile picture
-        var hasProfilePicture = "{{ user.profile_picture }}";
-        
-        if (hasProfilePicture) {
-            var fileName = hasProfilePicture.split('/').pop();
-            $('#fileSelected').text('Selected file: ' + fileName);
-        }
-        
-        // Update the label when a file is selected
-        $('#profileImage').change(function() {
-            var fileName = $(this).val().split('\\').pop();
-            $('#fileSelected').text('Selected file: ' + fileName);
-        });
-    });
+						</div>
+						<div
+							id="pagination"
+							style="width: 75vw"
+							class="m-3 text-center"
+						></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
-	$(document).ready(function () {
-		$(document).on('click', '.unlike-exercise', function() {
-            var exerciseId = $(this).data('exercise-id');
-            var $button = $(this);
-            var $exercise = $button.closest(".list-group-item")
-            $.ajax({
-                url: "{% url 'unlike-exercise' %}",
-                method: 'POST',
-                headers: { 'X-CSRFToken': csrfToken },
-                data: {
-                    exercise_id: exerciseId,
-                },
-                success: function(response) {
-                    if (response.success) {
-                        // Update the UI to indicate that the exercise was liked
-                        $button.removeClass('unlike-exercise').addClass('like-exercise');
-                        $exercise.fadeOut(function() {
-                            $exercise.remove();
-                            var exerciseCount = parseInt($("#v-pills-exercises-tab").text().match(/\d+/)[0]) - 1;
-                            $("#v-pills-exercises-tab").html("Liked exercises (" + exerciseCount + ")");
-                        });
-                    } else {
-                        alert('Error: could not remove exercise from liked exercises');
-                    }
-                },
-                error: function() {
-                    alert('Error: could not remove exercise from liked exercises');
-                }
+	<div
+		class="tab-pane fade border border-secondary border-3 rounded p-3 mx-5"
+		id="nav-contact"
+		role="tabpanel"
+		aria-labelledby="nav-contact-tab"
+		tabindex="0"
+	>
+		<h3 class="mb-3">Your personal data:</h3>
+		<div class="alert alert-secondary" role="alert">
+			<strong>* Grayed out fields are non changeable</strong>
+		</div>
+        <form id="update-user-form" enctype="multipart/form-data">
+		<div class="mb-3">
+			<label class="form-label">Email address</label>
+			<input
+				type="email"
+				class="form-control"
+				value="{{ user.email }}"
+				disabled
+				readonly
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Name</label>
+			<input
+				type="text"
+				class="form-control"
+				value="{{ user.first_name }}"
+				disabled
+				readonly
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Surname</label>
+			<input
+				type="text"
+				class="form-control"
+				value="{{ user.last_name }}"
+				disabled
+				readonly
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Profile photo</label>
+			<input
+				class="form-control"
+				type="file"
+				id="profileImage"
+				accept="image/*"
+				name="profileImage"
+			/>
+			<span id="fileSelected"></span>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Username</label>
+			<input
+				type="username"
+				class="form-control"
+				id="username"
+				value="{{ user.username }}"
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Phone number</label>
+			<input
+				type="tel"
+				id="number"
+				class="form-control"
+				value="{{ user.phone_number }}"
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Age</label>
+			<input
+				type="number"
+				class="form-control"
+				value="{{ user.age }}"
+				disabled
+				readonly
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Height</label>
+			<input
+				type="number"
+				id="height"
+				class="form-control"
+				value="{{ user.height }}"
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Weight</label>
+			<input
+				type="number"
+				id="weight"
+				class="form-control"
+				value="{{ user.weight }}"
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Sex</label>
+			<input
+				type="text"
+				class="form-control"
+				value="{{ user.sex|title }}"
+				disabled
+				readonly
+			/>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">Password</label>
+			<input
+				type="password"
+				id="change-password"
+				data-password="{{ user.password }}"
+				class="form-control"
+				placeholder="To change your password, please enter the previous one"
+			/>
+		</div>
+		<div class="d-flex">
+			<button
+				style="width: 6em; height: 3em"
+				type="submit"
+				id="submit-btn"
+				class="btn btn-outline-secondary"
+			>
+				Save
+			</button>
+			<p class="error-messages"></p>
+		</div>
+        </form>
+	</div>
+	<div class="modal" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Change password</h5>
+					<button
+						type="button"
+						class="btn-close"
+						data-bs-dismiss="modal"
+						aria-label="Close"
+					></button>
+				</div>
+				<div class="modal-body">
+					<input
+						id="new-password"
+						type="password"
+						class="form-control mb-3"
+						placeholder="Enter new password"
+					/>
+					<input
+						id="confirm-password"
+						type="password"
+						class="form-control"
+						placeholder="Confirm new password"
+					/>
+				</div>
+				<div class="modal-footer">
+					<button
+						type="button"
+						class="btn btn-secondary"
+						data-bs-dismiss="modal"
+					>
+						Close
+					</button>
+					<button type="button" id="save-changes" class="btn btn-primary">
+						Save changes
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% else %}
+	<div class="text-center mx-5">
+		<h2 class="mb-5"><strong>You are not logged in</strong></h2>
+		<hr />
+		<br /><br />
+		<h3 class="mt-5">
+			Log In <span><a href="{% url 'login' %}">here</a></span>
+		</h3>
+		<br />
+		<h3>
+			Don't have an account? Register
+			<span><a href="{% url 'register' %}">here</a></span>
+		</h3>
+	</div>
+	{% endif %}
+	<script>
+		const csrfToken = "{{ csrf_token }}";
+	</script>
+	<script>
+		$(document).ready(function () {
+			// Check if the user has an existing profile picture
+			var hasProfilePicture = "{{ user.profile_picture }}";
+
+			if (hasProfilePicture) {
+				var fileName = hasProfilePicture.split("/").pop();
+				$("#fileSelected").text("Selected file: " + fileName);
+			}
+
+			// Update the label when a file is selected
+			$("#profileImage").change(function () {
+				var fileName = $(this).val().split("\\").pop();
+				$("#fileSelected").text("Selected file: " + fileName);
+			});
+		});
+
+		$(document).ready(function () {
+            $(".sets-reps-form").submit(function (event) {
+                event.preventDefault();
+
+                var formData = $("#" + this.id).serialize();
+                var sets = formData.split('&')[0].split('=')[1];
+                var reps = formData.split('&')[1].split('=')[1];
+                var exerciseId = this.id.split("-")[1];
+
+                // Send the AJAX request
+                $.ajax({
+                    method: "POST",
+                    url: "{% url 'save-sets-reps' %}",
+                    headers: { "X-CSRFToken": csrfToken },
+                    data: formData + "&exercise_id=" + exerciseId,
+                    success: function (response) {
+                        // Handle success response
+                        console.log(response);
+                        // Perform any additional actions
+                        $("#sets-" + exerciseId).val("");
+                        $("#reps-" + exerciseId).val("");
+                        $("#sets-" + exerciseId).attr("placeholder", "Sets: " + sets);
+                        $("#reps-" + exerciseId).attr("placeholder", "Reps: " + reps);
+                    },
+                    error: function (xhr, status, error) {
+                        // Handle error response
+                        console.log(xhr.responseText);
+                        // Perform any error handling
+                    },
+                });
             });
         });
 
-		$(document).on("click", ".unlike-recipe", function () {
-			var recipeId = $(this).data("recipe-id");
-			var $button = $(this);
-            var $recipe = $button.closest(".list-group-item")
-			$.ajax({
-				url: "{% url 'unlike-recipe' %}",
-				method: "POST",
-				headers: { "X-CSRFToken": csrfToken },
-				data: {
-					recipe_id: recipeId,
-				},
-				success: function (response) {
-					if (response.success) {
-						// Update the UI to indicate that the recipe was unliked
-						$button.removeClass("unlike-recipe").addClass("like-recipe");
-                        $recipe.fadeOut(function() {
-                            $recipe.remove();
-                            var recipeCount = parseInt($("#v-pills-home-tab").text().match(/\d+/)[0]) - 1;
-                            $("#v-pills-home-tab").html("Liked recipes (" + recipeCount + ")");
-                        });
-						
-					} else {
-						alert("Error: could not remove recipe from liked recipes");
-					}
-				},
-				error: function () {
-					alert("Error: could not remove recipe from liked recipes");
-				},
-			});
-		});
-
-        $(document).on('click', '.remove-from-training', function() {
-            var exerciseId = $(this).data('exercise-id');
-            var $button = $(this);
-            var $i = $($button).find("i");
-            var $exercise = $button.closest(".list-group-item")
-            $.ajax({
-                url: "{% url 'remove-from-training' %}",
-                method: 'POST',
-                headers: { 'X-CSRFToken': csrfToken },
-                data: {
-                    exercise_id: exerciseId,
-                },
-                success: function(response) {
-                    if (response.success) {
-                        // Update the UI to indicate that the exercise was liked
-                        $button.removeClass('remove-from-training').addClass('add-to-training');
-                        $i.removeClass('fa-check').addClass('fa-plus');
-                        $exercise.fadeOut(function() {
-                            $exercise.remove();
-                            var exerciseCount = parseInt($("#v-pills-training-tab").text().match(/\d+/)[0]) - 1;
-                            $("#v-pills-training-tab").html("Training (" + exerciseCount + ")");
-                        });
-                    } else {
-                        alert('Error: could not remove exercise from training');
-                    }
-                },
-                error: function() {
-                    alert('Error: could not remove exercise from training');
-                }
-            });
-        });
-
-		$("#change-password").on("input", function () {
-			var input = $(this).val();
-			$.ajax({
-				url: "{% url 'check-password' %}",
-				type: "POST",
-				data: {
-					input: input,
-					csrfmiddlewaretoken: "{{ csrf_token }}",
-				},
-				success: function (response) {
-					if (response.success) {
-						$(".modal").modal("show");
-						$("#change-password").val("");
-					} else {
-						$(".modal").modal("hide");
-					}
-				},
-			});
-		});
-
-		$("#save-changes").on("click", function () {
-			var new_password = $("#new-password").val();
-			var confirm_password = $("#confirm-password").val();
-			$.ajax({
-				url: "{% url 'change-password' %}",
-				type: "POST",
-				data: {
-					new_password: new_password,
-					confirm_password: confirm_password,
-					csrfmiddlewaretoken: "{{ csrf_token }}",
-				},
-				success: function (response) {
-					if (response.success) {
-						alert("Password changed successfully!");
-					} else {
-						alert(response.message);
-					}
-				},
-				error: function () {
-					alert("Error: Could not change password.");
-				},
-			});
-		});
-		// On clicking the save button
-		$("#submit-btn").click(function () {
-			// Get the input field values
-			var username = $("#username").val().trim();
-			var phoneNumber = $("#number").val().trim();
-			var height = $("#height").val().trim();
-			var weight = $("#weight").val().trim();
-
-			// Validate the input fields
-			var errors = "";
-			if (username == "") {
-				errors += "Please enter a valid username.";
-			}
-			if (phoneNumber == "") {
-				errors += "Please enter a valid phone number.";
-			}
-			if (height == "") {
-				errors += "Please enter a valid height.";
-			}
-			if (weight == "") {
-				errors += "Please enter a valid weight.";
-			}
-			// Display error messages if any
-			if (errors != "") {
-				$(".error-messages").html(errors);
-				return false;
-			}
-
-			// If all fields are valid, send an AJAX request to update the database
-			$.ajax({
-				type: "POST",
-				url: "{% url 'update-user' %}",
-				data: {
-					username: username,
-					phoneNumber: phoneNumber,
-					height: height,
-					weight: weight,
-					csrfmiddlewaretoken: "{{ csrf_token }}",
-				},
-				success: function (response) {
-					// Display success message
-					alert("User information updated successfully!");
-					location.reload();
-				},
-				error: function (xhr, status, error) {
-					// Display error message
-					alert("An error occurred while updating user information");
-				},
-			});
-		});
-	});
-
-	$(document).on("click", ".add-to-cookbook", function () {
-		var recipeId = $(this).data("recipe-id");
-		var $button = $(this);
-		var $i = $($button).find("i");
-		$.ajax({
-			url: "{% url 'add-to-cookbook' %}",
-			method: "POST",
-			headers: { "X-CSRFToken": csrfToken },
-			data: {
-				recipe_id: recipeId,
-			},
-			success: function (response) {
-				if (response.success) {
-					// Update the UI to indicate that the recipe was liked
-					$button
-						.removeClass("add-to-cookbook")
-						.addClass("remove-from-cookbook");
-					$i.removeClass("fa-plus").addClass("fa-check");
-                    var recipeCount = parseInt($("#v-pills-profile-tab").text().match(/\d+/)[0]) + 1;
-                    $("#v-pills-profile-tab").html("Cookbook (" + recipeCount + ")");
-				} else {
-					alert("Error: could not add recipe to cookbook");
-				}
-			},
-			error: function () {
-				alert("Error: could not add recipe to cookbook");
-			},
-		});
-	});
-
-	function loadRecipes() {
-		var recipes = $(".cookbook");
-		var currentIndex = 0;
-        var animateSpeed = 500;
-
-		function showRecipe(index) {
-        recipes.fadeOut(animateSpeed);
-        setTimeout(function() {
-            recipes.eq(index).fadeIn(animateSpeed);
-        }, animateSpeed);
-    }
-
-		function showPagination() {
-			var pagination = $("#pagination");
-			pagination.empty();
-			if (recipes.length > 1) {
-				pagination.show();
-				var prevButton = $("<button>")
-					.addClass("btn btn-secondary mx-3 prev")
-					.html("&larr;");
-				var nextButton = $("<button>")
-					.addClass("btn btn-secondary mx-3 next")
-					.html("&rarr;");
-				pagination.append(prevButton);
-				pagination.append(nextButton);
-
-				prevButton.on("click", function () {
-					currentIndex--;
-					if (currentIndex < 0) {
-						currentIndex = recipes.length - 1;
-					}
-					showRecipe(currentIndex);
+			$(document).ready(function () {
+				$(document).on("click", ".unlike-exercise", function () {
+					var exerciseId = $(this).data("exercise-id");
+					var $button = $(this);
+					var $exercise = $button.closest(".list-group-item");
+					$.ajax({
+						url: "{% url 'unlike-exercise' %}",
+						method: "POST",
+						headers: { "X-CSRFToken": csrfToken },
+						data: {
+							exercise_id: exerciseId,
+						},
+						success: function (response) {
+							if (response.success) {
+								// Update the UI to indicate that the exercise was liked
+								$button
+									.removeClass("unlike-exercise")
+									.addClass("like-exercise");
+								$exercise.fadeOut(function () {
+									$exercise.remove();
+									var exerciseCount =
+										parseInt(
+											$("#v-pills-exercises-tab").text().match(/\d+/)[0]
+										) - 1;
+									$("#v-pills-exercises-tab").html(
+										"Liked exercises (" + exerciseCount + ")"
+									);
+								});
+							} else {
+								alert("Error: could not remove exercise from liked exercises");
+							}
+						},
+						error: function () {
+							alert("Error: could not remove exercise from liked exercises");
+						},
+					});
 				});
 
-				nextButton.on("click", function () {
-					currentIndex++;
-					if (currentIndex >= recipes.length) {
-						currentIndex = 0;
-					}
-					showRecipe(currentIndex);
+				$(document).on("click", ".unlike-recipe", function () {
+					var recipeId = $(this).data("recipe-id");
+					var $button = $(this);
+					var $recipe = $button.closest(".list-group-item");
+					$.ajax({
+						url: "{% url 'unlike-recipe' %}",
+						method: "POST",
+						headers: { "X-CSRFToken": csrfToken },
+						data: {
+							recipe_id: recipeId,
+						},
+						success: function (response) {
+							if (response.success) {
+								// Update the UI to indicate that the recipe was unliked
+								$button.removeClass("unlike-recipe").addClass("like-recipe");
+								$recipe.fadeOut(function () {
+									$recipe.remove();
+									var recipeCount =
+										parseInt($("#v-pills-home-tab").text().match(/\d+/)[0]) - 1;
+									$("#v-pills-home-tab").html(
+										"Liked recipes (" + recipeCount + ")"
+									);
+								});
+							} else {
+								alert("Error: could not remove recipe from liked recipes");
+							}
+						},
+						error: function () {
+							alert("Error: could not remove recipe from liked recipes");
+						},
+					});
 				});
-			} else {
-				pagination.hide();
-			}
-		}
 
-		showRecipe(currentIndex);
-		showPagination();
-	}
-
-	$(document).on("click", ".remove-from-cookbook", function () {
-		var recipeId = $(this).data("recipe-id");
-		var $button = $(this);
-		var $i = $($button).find("i");
-		$.ajax({
-			url: "{% url 'remove-from-cookbook' %}",
-			method: "POST",
-			headers: { "X-CSRFToken": csrfToken },
-			data: {
-				recipe_id: recipeId,
-			},
-			success: function (response) {
-				if (response.success) {
-					// Update the UI to indicate that the recipe was liked
-					$button
-						.removeClass("remove-from-cookbook")
-						.addClass("add-to-cookbook");
-					$i.removeClass("fa-check").addClass("fa-plus");
-                    $button.closest(".cookbook").fadeOut(function() {
-                        $(".next").click();
+                $(document).on('click', '.like-recipe', function() {
+                    var recipeId = $(this).data('recipe-id');
+                    var $button = $(this);
+                    $.ajax({
+                        url: "{% url 'like-recipe' %}",
+                        method: 'POST',
+                        headers: { 'X-CSRFToken': csrfToken },
+                        data: {
+                            recipe_id: recipeId,
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                // Update the UI to indicate that the recipe was liked
+                                $button.removeClass('like-recipe').addClass('unlike-recipe');
+                            } else {
+                                alert('Error: could not add recipe to liked recipes');
+                            }
+                        },
+                        error: function() {
+                            alert('Error: could not add recipe to liked recipes');
+                        }
                     });
-                    var recipeCount = parseInt($("#v-pills-profile-tab").text().match(/\d+/)[0]) - 1;
-                    $("#v-pills-profile-tab").html("Cookbook (" + recipeCount + ")");
-				} else {
-					alert("Error: could not remove recipe from cookbook");
-				}
-			},
-			error: function () {
-				alert("Error: could not remove recipe from cookbook");
-			},
+                });
+
+				$(document).on("click", ".remove-from-index-training", function () {
+					var exerciseId = $(this).data("exercise-id");
+					var $button = $(this);
+					var $i = $($button).find("i");
+					var $exercise = $button.closest(".border-training");
+					$.ajax({
+						url: "{% url 'remove-from-training' %}",
+						method: "POST",
+						headers: { "X-CSRFToken": csrfToken },
+						data: {
+							exercise_id: exerciseId,
+						},
+						success: function (response) {
+							if (response.success) {
+								// Update the UI to indicate that the exercise was liked
+								$button
+									.removeClass("remove-from-index-training")
+									.addClass("add-to-index-training");
+								$i.removeClass("fa-check").addClass("fa-plus");
+								$exercise.fadeOut(function () {
+									$exercise.remove();
+									var exerciseCount =
+										parseInt(
+											$("#v-pills-training-tab").text().match(/\d+/)[0]
+										) - 1;
+									$("#v-pills-training-tab").html(
+										"Training (" + exerciseCount + ")"
+									);
+								});
+							} else {
+								alert("Error: could not remove exercise from training");
+							}
+						},
+						error: function () {
+							alert("Error: could not remove exercise from training");
+						},
+					});
+				});
+
+				$("#change-password").on("input", function () {
+					var input = $(this).val();
+					$.ajax({
+						url: "{% url 'check-password' %}",
+						type: "POST",
+						data: {
+							input: input,
+							csrfmiddlewaretoken: "{{ csrf_token }}",
+						},
+						success: function (response) {
+							if (response.success) {
+								$(".modal").modal("show");
+								$("#change-password").val("");
+							} else {
+								$(".modal").modal("hide");
+							}
+						},
+					});
+				});
+
+				$("#save-changes").on("click", function () {
+					var new_password = $("#new-password").val();
+					var confirm_password = $("#confirm-password").val();
+					$.ajax({
+						url: "{% url 'change-password' %}",
+						type: "POST",
+						data: {
+							new_password: new_password,
+							confirm_password: confirm_password,
+							csrfmiddlewaretoken: "{{ csrf_token }}",
+						},
+						success: function (response) {
+							if (response.success) {
+								alert("Password changed successfully!");
+							} else {
+								alert(response.message);
+							}
+						},
+						error: function () {
+							alert("Error: Could not change password.");
+						},
+					});
+				});
+
+				$("#update-user-form").submit(function (event) {
+                    event.preventDefault();
+
+                    // Get the input field values
+                    var username = $("#username").val().trim();
+                    var phoneNumber = $("#number").val().trim();
+                    var height = $("#height").val().trim();
+                    var weight = $("#weight").val().trim();
+
+                    // Create a FormData object to store the form data
+                    var formData = new FormData();
+                    formData.append('username', username);
+                    formData.append('phoneNumber', phoneNumber);
+                    formData.append('height', height);
+                    formData.append('weight', weight);
+                    formData.append('profileImage', $('#profileImage')[0].files[0]);
+
+                    // Validate the input fields
+                    var errors = "";
+                    if (username == "") {
+                        errors += "Please enter a valid username.";
+                    }
+                    if (phoneNumber == "") {
+                        errors += "Please enter a valid phone number.";
+                    }
+                    if (height == "") {
+                        errors += "Please enter a valid height.";
+                    }
+                    if (weight == "") {
+                        errors += "Please enter a valid weight.";
+                    }
+
+                    // Display error messages if any
+                    if (errors != "") {
+                        $(".error-messages").html(errors);
+                        return false;
+                    }
+
+                    // If all fields are valid, send an AJAX request to update the database
+                    $.ajax({
+                        type: "POST",
+                        url: "{% url 'update-user' %}",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                        success: function (response) {
+                            // Display success message
+                            alert("User information updated successfully!");
+                            location.reload();
+                        },
+                        error: function (xhr, status, error) {
+                            // Display error message
+                            alert("An error occurred while updating user information");
+                        },
+                    });
+                });
+
+
+			$(document).on("click", ".add-to-cookbook", function () {
+				var recipeId = $(this).data("recipe-id");
+				var $button = $(this);
+				var $i = $($button).find("i");
+				$.ajax({
+					url: "{% url 'add-to-cookbook' %}",
+					method: "POST",
+					headers: { "X-CSRFToken": csrfToken },
+					data: {
+						recipe_id: recipeId,
+					},
+					success: function (response) {
+						if (response.success) {
+							// Update the UI to indicate that the recipe was liked
+							$button
+								.removeClass("add-to-cookbook")
+								.addClass("remove-from-cookbook");
+							$i.removeClass("fa-plus").addClass("fa-check");
+							var recipeCount =
+								parseInt($("#v-pills-profile-tab").text().match(/\d+/)[0]) + 1;
+							$("#v-pills-profile-tab").html("Cookbook (" + recipeCount + ")");
+						} else {
+							alert("Error: could not add recipe to cookbook");
+						}
+					},
+					error: function () {
+						alert("Error: could not add recipe to cookbook");
+					},
+				});
+			});
+
+		function loadRecipes() {
+            var recipes = $(".cookbook");
+            var currentIndex = 0;
+            var animateSpeed = 500;
+            var scrollPosition = $(window).scrollTop(); // Remember the current scroll position
+
+            function showRecipe(index) {
+                recipes.fadeOut(animateSpeed);
+                setTimeout(function () {
+                    recipes.eq(index).fadeIn(animateSpeed);
+                }, animateSpeed);
+            }
+
+            function showPagination() {
+                var pagination = $("#pagination");
+                pagination.empty();
+                if (recipes.length > 1) {
+                    pagination.show();
+                    var prevButton = $("<button>")
+                        .addClass("btn btn-secondary mx-3 prev")
+                        .html("&larr;");
+                    var nextButton = $("<button>")
+                        .addClass("btn btn-secondary mx-3 next")
+                        .html("&rarr;");
+                    pagination.append(prevButton);
+                    pagination.append(nextButton);
+
+                    prevButton.on("click", function () {
+                        currentIndex--;
+                        if (currentIndex < 0) {
+                            currentIndex = recipes.length - 1;
+                        }
+                        showRecipe(currentIndex);
+                    });
+
+                    nextButton.on("click", function () {
+                        currentIndex++;
+                        if (currentIndex >= recipes.length) {
+                            currentIndex = 0;
+                        }
+                        showRecipe(currentIndex);
+                    });
+                } else {
+                    pagination.hide();
+                }
+            }
+
+            showRecipe(currentIndex);
+            showPagination();
+
+            $(window).scrollTop(scrollPosition); // Restore the scroll position
+        }
+
+
+		$(document).on("click", ".remove-from-cookbook", function () {
+            event.preventDefault();
+				var recipeId = $(this).data("recipe-id");
+				var $button = $(this);
+				var $i = $($button).find("i");
+				$.ajax({
+					url: "{% url 'remove-from-cookbook' %}",
+					method: "POST",
+					headers: { "X-CSRFToken": csrfToken },
+					data: {
+						recipe_id: recipeId,
+					},
+					success: function (response) {
+						if (response.success) {
+							// Update the UI to indicate that the recipe was liked
+							$button
+								.removeClass("remove-from-cookbook")
+								.addClass("add-to-cookbook");
+							$i.removeClass("fa-check").addClass("fa-plus");
+							$button.closest(".cookbook").fadeOut(function () {
+                                loadRecipes();
+                                $(this).remove();
+								$(".next").click();
+							});
+							var recipeCount =
+								parseInt($("#v-pills-profile-tab").text().match(/\d+/)[0]) - 1;
+							$("#v-pills-profile-tab").html("Cookbook (" + recipeCount + ")");
+						} else {
+							alert("Error: could not remove recipe from cookbook");
+						}
+					},
+					error: function () {
+						alert("Error: could not remove recipe from cookbook");
+					},
+				});
+			}); 
+
+		$(document).ready(function () {
+			loadRecipes();
 		});
-	});
 
-	$(document).ready(function () {
-		loadRecipes();
-	});
-
-    $(".btn-dark").on("click", function() {
-        location.reload()
-    })
-</script>
-{% endblock %}
+		$(".btn-dark").on("click", function () {
+			location.reload();
+		});
+    });
+	</script>
+	{% endblock %}
+</div>

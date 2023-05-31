@@ -1,5 +1,49 @@
 {% extends "fitness_app/layout.html" %} {% block title %} Recipes {% endblock %}
 {% block body %}
+<button id="recipe-btn" class="btn btn-outline-success">Add new recipe <i class="fa fa-plus mx-2"></i></button>
+    <div id="recipe-form-container" style="display: none;" class="w-75 mt-5 add-form">
+        <form id="recipe-form">
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Title</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="recipe-title" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Category</label>
+                <div class="col-sm-10">
+                <select class="form-control" name="categories">
+                    <option value="" selected disabled>Choose Category</option>
+                    {% for recipe in data %}
+                    {% for category in recipe.categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                    {% endfor %}
+                </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Image link</label>
+                <div class="col-sm-10">
+                <input type="text" class="form-control" id="recipe-image">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Ingredients</label>
+                <div class="col-sm-10">
+                <textarea class="form-control" rows="4" cols="30" placeholder="Seperate each ingredient by a new line (Enter/Return)." id="exercise-ingredients" required></textarea>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <label class="col-sm-2 col-form-label">Description</label>
+                <div class="col-sm-10">
+                <textarea class="form-control" rows="4" cols="30" placeholder="Seperate each step by a new line (Enter/Return)." id="exercise-description" required></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+    </div>
+    <hr>
 
 <div class="row text-center" id="recipe-list">
     <h2><a href="{% url 'categories' %}">All Categories</a></h2>
@@ -58,6 +102,51 @@
 </script>
 
 <script>
+$(document).ready(function() {
+        $("#recipe-btn").click(function() {
+            $("#recipe-form-container").fadeToggle();
+        });
+    });
+
+$(document).ready(function() {
+        // Handle form submission
+        $('#recipe-form').submit(function(event) {
+            // Prevent the default form submission
+            event.preventDefault();
+
+            // Get form data
+            var formData = {
+                title: $('#recipe-title').val(),
+                category: $('select[name="categories"]').val(),
+                image_link: $('#recipe-image').val(),
+                ingredients: $('#recipe-ingredients').val(),
+                description: $('#recipe-description').val()
+            };
+
+            // Send form data using AJAX
+            $.ajax({
+                method: 'POST',
+                url: "{% url 'add-recipe' %}",
+                headers: { 'X-CSRFToken': csrfToken },
+                data: JSON.stringify(formData),
+                dataType: 'json',
+                contentType: 'application/json',
+                success: function(response) {
+                    // Handle success response
+                    console.log(response);
+                    // Perform any additional actions
+                    $('#recipe-form').fadeOut();
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    // Handle error response
+                    console.log(xhr.responseText);
+                    // Perform any error handling
+                }
+            });
+        });
+    });
+
 	$(document).ready(function () {
 		$("#load-more").click(function () {
 			var url = "{{ request.path }}?start=" + $(this).data("start");

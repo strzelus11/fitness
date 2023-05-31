@@ -12,7 +12,7 @@
         {% endfor %}
         </ol>
         <div class="text-center">
-            <a href="" class="card-link mx-5 category-link">{{ exercise.type }}</a>
+            <a href="{% url 'type' type=exercise.type|slugify %}" class="card-link mx-5 category-link">{{ exercise.type }}</a>
         </div>
     </div>
 {% endblock %}

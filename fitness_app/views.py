@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import check_password
 from django.http import JsonResponse
@@ -20,20 +21,17 @@ def index(request):
         liked_recipes = Recipe.objects.filter(id__in=liked_recipes_list)
         liked_exercises = Exercise.objects.filter(id__in=liked_exercises_list)
         cookbook_list = Cookbook.objects.filter(user=user).values_list('recipe', flat=True)
-        training_list = Training.objects.filter(user=user).values_list('exercise__id', flat=True)
+        training = Training.objects.filter(user=user)
         cookbook_ids = cookbook_list
-        training_ids = training_list
         liked_ids = liked_recipes_list
         liked_exercises_ids = liked_exercises_list
         cookbook = Recipe.objects.filter(id__in=cookbook_list)
-        training = Exercise.objects.filter(id__in=training_list)
 
         return render(request, "fitness_app/index.html", {
             "user": user,
             "recipes": liked_recipes,
             "exercises": liked_exercises,
             'cookbook_ids': cookbook_ids,
-            'training_ids': training_ids,
             "liked_ids": liked_ids,
             "liked_exercises_ids": liked_exercises_ids,
             "cookbook": cookbook,
@@ -92,6 +90,27 @@ def categories(request):
     })
 
 
+def types(request):
+    types = set()
+    exercises = Exercise.objects.all()
+
+    for exercise in exercises:
+        types.add(exercise.type)
+
+    types = sorted(types)
+
+    # Create a dictionary of types and their counts
+    type_counts = {}
+    for type in types:
+        type_count = len(Exercise.objects.filter(type=type))
+        type_counts[type] = type_count
+
+    return render(request, 'fitness_app/types.html', {
+        'types': types,
+        'type_counts': type_counts,
+    })
+
+
 def category(request, category):
     user = request.user
     category = unslugify(category)
@@ -110,6 +129,27 @@ def category(request, category):
         return render(request, 'fitness_app/category.html', {
             'category': category,
             'recipes': recipes
+        })
+    
+
+def type(request, type):
+    user = request.user
+    type = unslugify(type)
+    exercises = Exercise.objects.filter(type__icontains=type)
+
+    try:
+        liked_exercises = LikedExercise.objects.filter(user=user).values_list('exercise', flat=True)
+        training = Training.objects.filter(user=user).values_list('exercise', flat=True)
+        return render(request, 'fitness_app/type.html', {
+            'exercises': exercises,
+            'type': type,
+            'liked_exercises': liked_exercises,
+            'training': training
+        })
+    except TypeError:
+        return render(request, 'fitness_app/type.html', {
+            'type': type,
+            'exercises': exercises
         })
 
 
@@ -193,20 +233,39 @@ def validate_password(request):
 @login_required
 def update_user(request):
     user = request.user
-    image = request.POST.get('profileImage')
+    image = request.FILES.get('profileImage')
     username = request.POST.get('username')
     phoneNumber = request.POST.get('phoneNumber')
     height = request.POST.get('height')
     weight = request.POST.get('weight')
+    print(image)
 
     user.username = username
-    user.profile_picture = image
     user.phone_number = phoneNumber
     user.height = height
     user.weight = weight
 
+    if image:
+        try:
+            user.profile_picture = image
+        except ValidationError as e:
+            return JsonResponse({'success': False, 'message': str(e)})
+
     user.save()
-    return JsonResponse({'success': True, 'message': 'Profile updated successfully.'})
+
+    # Return updated user data in the response
+    response_data = {
+        'success': True,
+        'message': 'Profile updated successfully.',
+        'user': {
+            'username': user.username,
+            'phoneNumber': user.phone_number,
+            'height': user.height,
+            'weight': user.weight,
+        }
+    }
+
+    return JsonResponse(response_data)
 
 @login_required
 def change_password(request):
@@ -221,7 +280,11 @@ def change_password(request):
             user = request.user
             user.set_password(new_password)
             user.save()
-            return JsonResponse({'success': True})
+
+            # Redirect to the login page
+            return redirect('login')
+
+    return JsonResponse({'success': False, 'message': 'Invalid request.'})
         
 
 def exercises(request):
@@ -252,7 +315,7 @@ def add_exercise(request):
     if request.method == 'POST':
         # Retrieve form data from AJAX request
         data = json.loads(request.body)
-        name = data.get('name')
+        name = data.get('name').title()
         type = data.get('type')
         video_link = data.get('video_link')
         description = data.get('description').splitlines()
@@ -262,6 +325,40 @@ def add_exercise(request):
             name=name,
             type=type,
             video_link=video_link,
+            description=description
+        )
+
+        # Return a JSON response indicating success
+        response = {
+            'status': 'success',
+            'message': 'Exercise updated successfully'
+        }
+        return JsonResponse(response)
+
+    # Return a JSON response indicating an error for unsupported request methods
+    response = {
+        'status': 'error',
+        'message': 'Invalid request method'
+    }
+    return JsonResponse(response)
+
+
+def add_recipe(request):
+    if request.method == 'POST':
+        # Retrieve form data from AJAX request
+        data = json.loads(request.body)
+        title = data.get('title').title()
+        category = data.get('category')
+        image_link = data.get('image_link')
+        ingredients = data.get('ingredients').splitlines()
+        description = data.get('description').splitlines()
+
+        # Perform database update
+        recipe = Recipe.objects.create(
+            title=title,
+            category=category,
+            image=image_link,
+            ingredients=ingredients,
             description=description
         )
 
@@ -310,6 +407,26 @@ def add_to_training(request):
         liked_recipe.save()
         return JsonResponse({'success': True})
     return JsonResponse({'success': False})
+
+
+@login_required
+def save_sets_reps(request):
+    if request.method == 'POST':
+        user = request.user
+        exercise_id = request.POST.get('exercise_id')
+        sets = request.POST.get('sets')
+        reps = request.POST.get('reps')
+
+        # Save the sets and reps in the Exercise model
+        exercise = Exercise.objects.get(id=exercise_id)
+        training = Training.objects.get(exercise=exercise, user=user)
+        training.sets = sets
+        training.reps = reps
+        training.save()
+
+        return JsonResponse({'message': 'Sets and reps saved successfully.'})
+
+    return JsonResponse({'error': 'Invalid request.'})
 
 
 @login_required

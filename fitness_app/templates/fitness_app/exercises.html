@@ -1,44 +1,47 @@
 {% extends "fitness_app/layout.html" %} {% block title %} Exercises {% endblock %} 
 {% block body %}
-    <button id="exercise-btn" class="btn btn-outline-success">Add new exercise <i class="fa fa-plus mx-2"></i></button>
-    <div id="exercise-form-container" style="display: none;" class="w-75 mt-5 add-form">
-        <form id="exercise-form">
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Name</label>
-                <div class="col-sm-10">
-                <input type="text" class="form-control" id="exercise-name" required>
+<div class="form-div">
+    <button id="exercise-btn" class="btn btn-outline-success">Add new exercise <i class="fa fa-plus mx-2 form-btn"></i></button>
+</div>
+        
+        <div id="exercise-form-container" style="display: none;" class="mt-5 add-form">
+            <form id="exercise-form">
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Name</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="exercise-name" required>
+                    </div>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Type</label>
-                <div class="col-sm-10">
-                <select class="form-control" name="muscle_group">
-                    <option value="" selected disabled>Choose Type</option>
-                    <option value="Chest">Chest</option>
-                    <option value="Back">Back</option>
-                    <option value="Abs">Abs</option>
-                    <option value="Legs">Legs</option>
-                    <option value="Biceps">Biceps</option>
-                    <option value="Triceps">Triceps</option>
-                    <option value="Shoulders">Shoulders</option>
-                </select>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Type</label>
+                    <div class="col-sm-10">
+                        <select class="form-control" name="muscle_group">
+                            <option value="" selected disabled>Choose Type</option>
+                            <option value="Chest">Chest</option>
+                            <option value="Back">Back</option>
+                            <option value="Abs">Abs</option>
+                            <option value="Legs">Legs</option>
+                            <option value="Biceps">Biceps</option>
+                            <option value="Triceps">Triceps</option>
+                            <option value="Shoulders">Shoulders</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Video link</label>
-                <div class="col-sm-10">
-                <input type="text" class="form-control" id="exercise-video">
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Video link</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="exercise-video">
+                    </div>
                 </div>
-            </div>
-            <div class="row mb-3">
-                <label class="col-sm-2 col-form-label">Description</label>
-                <div class="col-sm-10">
-                <textarea class="form-control" rows="4" cols="30" placeholder="Seperate each step by a new line (Enter/Return)." id="exercise-description" required></textarea>
+                <div class="row mb-3">
+                    <label class="col-sm-2 col-form-label">Description</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" rows="4" cols="30" placeholder="Seperate each step by a new line (Enter/Return)." id="exercise-description" required></textarea>
+                    </div>
                 </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Add</button>
-        </form>
-    </div>
+                <button type="submit" class="btn btn-success">Add Exercise</button>
+            </form>
+        </div>
     <hr>
     <div class="row text-center" id="exercises-div">
         <h2><a href="{% url 'types' %}">All Types</a></h2>
@@ -84,7 +87,7 @@
     <script>
     $(document).ready(function() {
         $("#exercise-btn").click(function() {
-            $("#exercise-form-container").fadeToggle();
+            $("#exercise-form-container").fadeToggle(1000);
         });
     });
 

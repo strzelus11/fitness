@@ -181,8 +181,8 @@ html {
 }
 
 .card-index {
-	width: 40em;
-	margin-left: 15em;
+	width: 50em;
+	margin: 0 auto;
 }
 
 .error-messages {
@@ -213,9 +213,10 @@ html {
 }
 
 .add-form {
-	border: 2px solid gray;
+	border: 3px solid rgb(27, 127, 0);
 	border-radius: 1em;
 	padding: 1em;
+	width: 75%;
 }
 
 .border-training {
@@ -226,8 +227,8 @@ html {
 
 .remove-from-index-training {
 	position: absolute;
+	right: 30em;
 	font-size: 1.5em;
-	right: 22em;
 	color: green;
 	border: none;
 	background-color: inherit;
@@ -244,6 +245,35 @@ html {
 	color: grey;
 	border: none;
 	background-color: inherit;
+}
+
+#nav-contact {
+	border: 3px solid rgba(0, 213, 255, 0.623);
+	border-radius: 1em;
+	padding: 1em;
+}
+
+.btn-index {
+	border: 1px solid black;
+}
+
+.index-nav {
+	background: rgb(242, 242, 242);
+	border: 1px solid gray;
+	border-radius: 0.5em;
+	padding: 1em;
+}
+
+#liked-recipes-div {
+	margin: 0 20em;
+}
+
+#liked-exercises-div {
+	margin: 0 20em;
+}
+
+.exercise-margin {
+	margin: 0 3em;
 }
 
 @media only screen and (max-width: 480px) {
@@ -283,4 +313,81 @@ html {
 	.remove-from-training {
 		left: 30px;
 	}
+
+	.add-form {
+		border: none;
+		display: block;
+		margin: 0 auto;
+		width: 100%;
+	}
+
+	.form-btn {
+		display: block;
+	}
+
+	.form-div {
+		display: flex;
+		justify-content: center;
+	}
+
+	#nav-contact {
+		margin: 0;
+		border: none;
+	}
+
+	#liked-recipes-div {
+		margin: 0;
+	}
+
+	#liked-exercises-div {
+		margin: 0;
+	}
+
+	.card-index {
+		width: 100%;
+		margin: 0 auto;
+	}
+
+	.index-nav {
+		border: none;
+	}
+
+	.nav-tab {
+		margin: 10px;
+	}
+
+	.username {
+		display: none;
+	}
+
+	.workout-img {
+		width: 100%;
+		height: auto;
+	}
+
+	.underline {
+		display: none;
+	}
+
+	.container-fluid {
+		margin: 0;
+	}
+
+	.exercise-margin {
+		margin: 0;
+	}
+
+	.vertical {
+		flex-direction: column;
+	}
+
+    aside {
+        width: 100%;
+        padding: 1em;
+        margin: 0;
+    }
+
+    article {
+        width: 100%;
+    }
 }

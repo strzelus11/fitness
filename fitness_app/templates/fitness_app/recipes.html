@@ -1,7 +1,9 @@
 {% extends "fitness_app/layout.html" %} {% block title %} Recipes {% endblock %}
 {% block body %}
-<button id="recipe-btn" class="btn btn-outline-success">Add new recipe <i class="fa fa-plus mx-2"></i></button>
-    <div id="recipe-form-container" style="display: none;" class="w-75 mt-5 add-form">
+<div class="form-div">
+    <button id="recipe-btn" class="btn btn-outline-success">Add new recipe <i class="fa fa-plus mx-2 form-btn"></i></button>
+</div>
+    <div id="recipe-form-container" style="display: none;" class="mt-5 add-form">
         <form id="recipe-form">
             <div class="row mb-3">
                 <label class="col-sm-2 col-form-label">Title</label>
@@ -40,7 +42,7 @@
                 <textarea class="form-control" rows="4" cols="30" placeholder="Seperate each step by a new line (Enter/Return)." id="exercise-description" required></textarea>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Add</button>
+            <button type="submit" class="btn btn-success">Add Recipe</button>
         </form>
     </div>
     <hr>
@@ -104,7 +106,7 @@
 <script>
 $(document).ready(function() {
         $("#recipe-btn").click(function() {
-            $("#recipe-form-container").fadeToggle();
+            $("#recipe-form-container").fadeToggle(1000);
         });
     });
 

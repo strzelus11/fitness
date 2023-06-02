@@ -33,9 +33,6 @@
 			crossorigin="anonymous"
 		></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.min.js"></script>
-        {% for file in js_files %}
-            <script src="{% static 'js/js_files/'|add:file %}"></script>
-        {% endfor %}
         <link rel="icon" type="image/x-icon" href="{% static 'logo-white.png' %}">
 	</head>
 	<body>
@@ -46,24 +43,19 @@
 				/>
 			</symbol>
 		</svg>
-		<nav class="navbar sticky-top navbar-expand-lg bg-light">
+		<nav class="navbar sticky-top navbar-expand-lg" style="background-color: rgb(242, 242, 242);">
 			<div class="container-fluid">
 				<a class="navbar-brand" href="{% url 'index' %}"><img style="width:70px; height: auto;"src="{% static 'logo-no-background.png' %}" alt=""></a>
 				<button
+                    id="navbar-toggler"
 					class="navbar-toggler"
 					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#navbarScroll"
-					aria-controls="navbarScroll"
-					aria-expanded="false"
-					aria-label="Toggle navigation"
 				>
 					<span class="navbar-toggler-icon"></span>
 				</button>
 				<div class="collapse navbar-collapse" id="navbarScroll">
 					<ul
-						class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll"
-						style="--bs-scroll-height: 100px"
+						class="navbar-nav me-auto my-2 my-lg-0"
 					>
 						<li class="nav-item">
 							<a class="nav-link" href="{% url 'index' %}">Profile</a>
@@ -102,12 +94,12 @@
 						style="--bs-scroll-height: 100px"
 					>
 						{% if user.is_authenticated %}
-						<li class="nav-item me-5">
+						<li class="nav-item me-5 username">
 							<a class="nav-link">{{ user.username }}</a>
 						</li>
 						{% endif %}
 						<li>
-							<form class="d-flex" role="search" method="get" action="{% url 'search' %}">
+							<form class="d-flex search-bar" role="search" method="get" action="{% url 'search' %}">
     <div class="input-group">
         <input class="form-control" type="search" placeholder="Search for ..." aria-label="Search" name="q" value="{{ query }}">
         <select name="search_type" id="search_type_select" class="form-select">
@@ -133,6 +125,14 @@
         </svg>
 		<div class="body">
 			<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                    $('#navbar-toggler').click(function() {
+                        // Toggle the visibility of the navigation
+                        $('#navbarScroll').slideToggle();
+                    });
+                });
+            </script>
 			{% block body %}
             {% endblock %}
 		</div>

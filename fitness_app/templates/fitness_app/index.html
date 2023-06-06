@@ -25,27 +25,27 @@
 </div>
 <br />
 <div class="d-flex justify-content-evenly index-nav">
-    <div class="">
+    <div>
         <button class="btn btn-light nav-tab" id="nav-recipes-tab">Your recipes</button>
     </div>
-    <div class="">
+    <div>
         <button class="btn btn-light nav-tab" id="nav-exercises-tab">Your exercises</button>
     </div>
-    <div class="">
+    <div>
         <button class="btn btn-light nav-tab" id="nav-personal-tab">Personal data</button>
     </div>
 </div>
 <div id="nav-elements" class="mt-5">
-    <div id="recipes-div" style="display:none;">
+    <div id="recipes-div" class="content-div" style="display:none;">
         <div class="d-flex justify-content-evenly">
-            <button class="btn btn-light" id="liked-recipes-tab">
+            <button class="btn btn-light nav-tab" id="liked-recipes-tab">
                     {% with recipes|length as recipes_count %} Liked recipes ({{ recipes_count }}) {% endwith %}
             </button>
-            <button class="btn btn-light" id="cookbook-tab">
+            <button class="btn btn-light nav-tab" id="cookbook-tab">
                     {% with cookbook|length as recipes_count %} Cookbook ({{ recipes_count}}) {% endwith %}
             </button>
         </div>
-        <div class="list-group mt-5" id="liked-recipes-div" style="display:none;">
+        <div class="list-group mt-5" id="liked-recipes-div" class="content-div" style="display:none;">
             {% if recipes %} 
             {% for recipe in recipes %}
                 <div class="list-group-item list-group-item-action">
@@ -54,15 +54,15 @@
                         <button class="unlike-recipe" data-recipe-id="{{ recipe.id }}"><i class="fa fa-heart"></i></button>
                     </div>
                     {% for category in recipe.categories %}
-                        <small>{{ category }}</small>
-                    {% endfor %}
+                    <small>| {{ category }}</small>
+                    {% endfor %}|
                 </div>
             {% endfor %} 
             {% else %}
                 <h2 class="col mb-5 mx-5">No liked recipes</h2>
             {% endif %}
         </div>
-        <div class="mt-5" id="cookbook-div" style="display:none;">
+        <div class="mt-5" id="cookbook-div" class="content-div" style="display:none;">
             {% if cookbook %}
             {% for recipe in cookbook %}
                 <div class="card h-100 cookbook card-index text-center">
@@ -108,16 +108,16 @@
             <div id="pagination" class="m-3 text-center"></div>
         </div>
     </div>
-    <div id="exercises-div" style="display:none;">
+    <div id="exercises-div" class="content-div" style="display:none;">
         <div class="d-flex justify-content-evenly">
-            <button class="btn btn-light" id="liked-exercises-tab">
+            <button class="btn btn-light nav-tab" id="liked-exercises-tab">
             {% with exercises|length as exercise_count %} Liked exercises ({{ exercise_count }}) {% endwith %}
             </button>
-            <button class="btn btn-light" id="training-tab">
+            <button class="btn btn-light nav-tab" id="training-tab">
                     {% with training|length as exercise_count %} Training ({{ exercise_count}}) {% endwith %}
             </button>
         </div>
-        <div class="list-group mt-5" id="liked-exercises-div" style="display:none;">
+        <div class="list-group mt-5" id="liked-exercises-div" class="content-div" style="display:none;">
             {% if exercises %} 
             {% for exercise in exercises %}
                 <div class="list-group-item list-group-item-action">
@@ -129,36 +129,38 @@
                             <i class="fa fa-heart"></i>
                         </button>
                     </div>
-                    <small>{{ exercise.type }}</small>
+                    <small>| {{ exercise.type }} |</small>
                 </div>
             {% endfor %} 
             {% else %}
                 <h2 class="col mb-5 mx-5">No liked exercises</h2>
             {% endif %}
         </div>
-        <div class="mt-5" id="training-div" style="display:none;">
+        <div class="mt-5" id="training-div" class="content-div" style="display:none;">
             {% if training %}
             {% for training_item in training %}
-                <div class="border-training mb-3">
-                    <div style="position: relative" class="d-flex w-100 justify-content-between align-items-center">
-                        <a class="title-link" href="{% url 'exercise' id=training_item.exercise.id name=training_item.exercise.name|slugify %}">
-                            <h5 class="mb-1 item">{{ training_item.exercise.name }}</h5>
-                        </a>
+                <div class="border-training mb-3 d-flex justify-content-between">
+                    <div style="position: relative" class="d-flex w-100 justify-content-between align-items-start">
+                        <div>
+                            <a class="title-link" href="{% url 'exercise' id=training_item.exercise.id name=training_item.exercise.name|slugify %}">
+                                <h5 class="mb-1 item">{{ training_item.exercise.name }}</h5>
+                            </a>
+                            <small>{{ training_item.exercise.type }}</small>
+                        </div>
                         <button class="remove-from-index-training" data-exercise-id="{{ training_item.exercise.id }}">
                             <i class="fa fa-check"></i>
                         </button>
                         <div class="input-group sets-reps-input w-50">
-                            <form class="sets-reps-form" id="form-{{ training_item.exercise.id }}">
+                            <form class="sets-reps-form b" id="form-{{ training_item.exercise.id }}">
                                 <div class="input-group sets-reps-input">
-                                    <input type="number" id="sets-{{ training_item.exercise.id }}" value="{{ training_item.sets }}" class="form-control" placeholder="Sets: {{ training_item.sets }}" name="sets" />
-                                    <div class="input-group-text">x</div>
-                                    <input type="number" id="reps-{{ training_item.exercise.id }}" value="{{ training_item.reps }}" class="form-control" placeholder="Reps: {{ training_item.reps }}" name="reps" />
-                                    <button class="btn btn-outline-secondary" type="submit">Save</button>
+                                    <input type="number" id="sets-{{ training_item.exercise.id }}" value="{{ training_item.sets }}" class="form-control b" placeholder="Sets: {{ training_item.sets }}" name="sets" />
+                                    <div class="input-group-text b">x</div>
+                                    <input type="number" id="reps-{{ training_item.exercise.id }}" value="{{ training_item.reps }}" class="form-control b" placeholder="Reps: {{ training_item.reps }}" name="reps" />
+                                    <button class="btn btn-outline-secondary b" type="submit">Save</button>
                                 </div>
                             </form>
                         </div>
                     </div>
-                    <small>{{ training_item.exercise.type }}</small>
                 </div>
             {% endfor %}
             {% else %}
@@ -166,7 +168,7 @@
             {% endif %}
         </div>
     </div>
-    <div id="personal-div" style="display:none;">
+    <div id="personal-div" class="content-div" style="display:none;">
         <div id="nav-contact">
 		<h3 class="mb-3">Your personal data:</h3>
 		<div class="alert alert-info" role="alert">
@@ -356,140 +358,97 @@
 	</script>
 	<script>
         $(document).ready(function() {
-            // Function to handle tab clicks
-            function handleTabClick(tabId, contentId) {
-                // Remove active class from all tabs
-                $(".nav-tab").removeClass("btn-secondary").addClass("btn-light");
-                // Add active class to the clicked tab
-                $(tabId).removeClass("btn-light").addClass("btn-secondary");
+            $(".nav-tab").removeClass("btn-secondary").addClass("btn-light");
+            $(".content-div").hide();
 
-                // Hide all content divs
-                $(".content-div").hide();
-                // Show the corresponding content div
-                $(contentId).fadeIn(500);
+            var activeTab = localStorage.getItem('activeTab');
+            var activeBtn = localStorage.getItem('activeBtn');
+            var activeTab2 = localStorage.getItem('activeTab2');
+            var activeBtn2 = localStorage.getItem('activeBtn2');
+            var activeTab3 = localStorage.getItem('activeTab3');
+            var activeBtn3 = localStorage.getItem('activeBtn3');
+
+            if (activeTab || activeBtn || activeTab2 || activeBtn2) {
+                $(activeBtn).addClass("btn-secondary").removeClass("btn-light");
+                $(activeBtn2).addClass("btn-secondary").removeClass("btn-light");
+                $(activeBtn3).addClass("btn-secondary").removeClass("btn-light");
+
+                $(activeTab).fadeIn(500);
+                $(activeTab2).fadeIn(500);
+                $(activeTab3).fadeIn(500);
             }
 
-            // Check if there is a saved active tab in localStorage
-            if (localStorage.getItem('activeTab')) {
-                // Retrieve the saved active tab
-                var activeTab = localStorage.getItem('activeTab');
-
-                // Handle the saved active tab
-                if (activeTab === "#nav-recipes-tab") {
-                handleTabClick(activeTab, "#recipes-div");
-                } else if (activeTab === "#nav-exercises-tab") {
-                handleTabClick(activeTab, "#exercises-div");
-                } else if (activeTab === "#nav-personal-tab") {
-                handleTabClick(activeTab, "#personal-div");
-                }
-            }
-
-            // Save the active tab when a tab is clicked
-            $(".nav-tab").click(function() {
-                var tabId = "#" + $(this).attr("id");
-                var contentId;
-
-                // Determine the corresponding content div based on the clicked tab
-                if (tabId === "#nav-recipes-tab") {
-                contentId = "#recipes-div";
-                } else if (tabId === "#nav-exercises-tab") {
-                contentId = "#exercises-div";
-                } else if (tabId === "#nav-personal-tab") {
-                contentId = "#personal-div";
-                }
-
-                // Handle the clicked tab
-                handleTabClick(tabId, contentId);
-
-                // Store the active tab in localStorage
-                localStorage.setItem('activeTab', tabId);
-            });
-        });
-
-        $(document).ready(function () {
-            
-			$("#nav-recipes-tab").click(function() {
-                $(this).addClass("btn-secondary");
-                $(this).removeClass("btn-light");
-                $("#nav-exercises-tab").removeClass("btn-secondary");
-                $("#nav-personal-tab").removeClass("btn-secondary");
-                $("#nav-exercises-tab").addClass("btn-light");
-                $("#nav-personal-tab").addClass("btn-light");
+            $("#nav-recipes-tab").click(function() {
+                $(this).addClass("btn-secondary").removeClass("btn-light");
+                $("#nav-exercises-tab").removeClass("btn-secondary").addClass("btn-light");
+                $("#nav-personal-tab").removeClass("btn-secondary").addClass("btn-light");
                 $("#recipes-div").fadeIn(500);
                 $("#exercises-div").hide();
                 $("#personal-div").hide();
+                localStorage.setItem('activeTab', "#recipes-div");
+                localStorage.setItem('activeBtn', "#nav-recipes-tab");
             });
 
-			$("#nav-exercises-tab").click(function() {
-                $(this).addClass("btn-secondary");
-                $(this).removeClass("btn-light");
-                $("#nav-recipes-tab").removeClass("btn-secondary");
-                $("#nav-personal-tab").removeClass("btn-secondary");
-                $("#nav-recipes-tab").addClass("btn-light");
-                $("#nav-personal-tab").addClass("btn-light");
+            $("#nav-exercises-tab").click(function() {
+                $(this).addClass("btn-secondary").removeClass("btn-light");
+                $("#nav-recipes-tab").removeClass("btn-secondary").addClass("btn-light");
+                $("#nav-personal-tab").removeClass("btn-secondary").addClass("btn-light");
                 $("#exercises-div").fadeIn(500);
                 $("#recipes-div").hide();
                 $("#personal-div").hide();
+                localStorage.setItem('activeTab', "#exercises-div");
+                localStorage.setItem('activeBtn', "#nav-exercises-tab");
             });
 
-			$("#nav-personal-tab").click(function() {
-                $(this).addClass("btn-secondary");
-                $(this).removeClass("btn-light");
-                $("#nav-exercises-tab").removeClass("btn-secondary");
-                $("#nav-recipes-tab").removeClass("btn-secondary");
-                $("#nav-exercises-tab").addClass("btn-light");
-                $("#nav-recipes-tab").addClass("btn-light");
+            $("#nav-personal-tab").click(function() {
+                $(this).addClass("btn-secondary").removeClass("btn-light");
+                $("#nav-exercises-tab").removeClass("btn-secondary").addClass("btn-light");
+                $("#nav-recipes-tab").removeClass("btn-secondary").addClass("btn-light");
                 $("#personal-div").fadeIn(500);
                 $("#recipes-div").hide();
                 $("#exercises-div").hide();
+                localStorage.setItem('activeTab', "#personal-div");
+                localStorage.setItem('activeBtn', "#nav-personal-tab");
             });
 
-            // recipes nav setup
-            $("#liked-recipes-div").fadeIn(500);
-            $("#liked-recipes-tab").addClass("btn-secondary");
-            $("#liked-recipes-tab").removeClass("btn-light");
-
             $("#liked-recipes-tab").click(function() {
-                $(this).addClass("btn-secondary");
-                $(this).removeClass("btn-light");
-                $("#cookbook-tab").removeClass("btn-secondary");
-                $("#cookbook-tab").addClass("btn-light");
+                $(this).addClass("btn-secondary").removeClass("btn-light");
+                $("#cookbook-tab").removeClass("btn-secondary").addClass("btn-light");
                 $("#liked-recipes-div").fadeIn(500);
                 $("#cookbook-div").hide();
+                localStorage.setItem('activeTab2', "#liked-recipes-div");
+                localStorage.setItem('activeBtn2', "#liked-recipes-tab");
             });
 
             $("#cookbook-tab").click(function() {
-                $(this).addClass("btn-secondary");
-                $(this).removeClass("btn-light");
-                $("#liked-recipes-tab").removeClass("btn-secondary");
-                $("#liked-recipes-tab").addClass("btn-light");
+                $(this).addClass("btn-secondary").removeClass("btn-light");
+                $("#liked-recipes-tab").removeClass("btn-secondary").addClass("btn-light");
                 $("#cookbook-div").fadeIn(500);
                 $("#liked-recipes-div").hide();
+                localStorage.setItem('activeTab2', "#cookbook-div");
+                localStorage.setItem('activeBtn2', "#cookbook-tab");
             });
 
-            // exercises nav setup
-            $("#liked-exercises-div").fadeIn(500);
-            $("#liked-exercises-tab").addClass("btn-secondary");
-            $("#liked-exercises-tab").removeClass("btn-light");
-
             $("#liked-exercises-tab").click(function() {
-                $(this).addClass("btn-secondary");
-                $(this).removeClass("btn-light");
-                $("#training-tab").removeClass("btn-secondary");
-                $("#training-tab").addClass("btn-light");
+                $(this).addClass("btn-secondary").removeClass("btn-light");
+                $("#training-tab").removeClass("btn-secondary").addClass("btn-light");
                 $("#liked-exercises-div").fadeIn(500);
                 $("#training-div").hide();
+                localStorage.setItem('activeTab3', "#liked-exercises-div");
+                localStorage.setItem('activeBtn3', "#liked-exercises-tab");
             });
 
             $("#training-tab").click(function() {
-                $(this).addClass("btn-secondary");
-                $(this).removeClass("btn-light");
-                $("#liked-exercises-tab").removeClass("btn-secondary");
-                $("#liked-exercises-tab").addClass("btn-light");
+                $(this).addClass("btn-secondary").removeClass("btn-light");
+                $("#liked-exercises-tab").removeClass("btn-secondary").addClass("btn-light");
                 $("#training-div").fadeIn(500);
                 $("#liked-exercises-div").hide();
+                localStorage.setItem('activeTab3', "#training-div");
+                localStorage.setItem('activeBtn3', "#training-tab");
             });
-		});
+        });
+
+
 
 		$(document).ready(function () {
 			// Check if the user has an existing profile picture

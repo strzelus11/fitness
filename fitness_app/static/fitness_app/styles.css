@@ -240,8 +240,8 @@ html {
 
 .add-to-index-training {
 	position: absolute;
+	right: 30em;
 	font-size: 1.5em;
-	right: 22em;
 	color: grey;
 	border: none;
 	background-color: inherit;
@@ -258,7 +258,7 @@ html {
 }
 
 .index-nav {
-	background: rgb(242, 242, 242);
+	background-color: rgb(242, 242, 242);
 	border: 1px solid gray;
 	border-radius: 0.5em;
 	padding: 1em;
@@ -381,13 +381,40 @@ html {
 		flex-direction: column;
 	}
 
-    aside {
-        width: 100%;
-        padding: 1em;
-        margin: 0;
-    }
+	aside {
+		width: 100%;
+		padding: 1em;
+		margin: 0;
+	}
 
-    article {
-        width: 100%;
-    }
+	article {
+		width: 100%;
+	}
+
+	.remove-from-index-training {
+		right: initial;
+		left: 0em;
+		bottom: 0.5em;
+	}
+
+	.add-to-index-training {
+		right: initial;
+		left: 0em;
+		bottom: 0.5em;
+	}
+
+	.b {
+		width: 7em;
+		border: none;
+	}
+
+	.input-group-text {
+		display: flex;
+		justify-content: center;
+	}
+
+	.input-group.sets-reps-input {
+		display: flex;
+		justify-content: flex-end;
+	}
 }

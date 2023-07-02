@@ -100,3 +100,21 @@ This template displays all exercises within chosen category.
 ### types.html
 
 This template displays all of the exercises types with their counts.
+
+## How to run 
+
+1. Clone the repository: Open your terminal or command prompt and navigate to the directory where you want to clone the repository.
+
+2. Create a virtual environment (optional but recommended): It's a good practice to create a virtual environment to isolate the dependencies of your Django app. Navigate to the project's directory and create a virtual environment.
+
+3. Activate the virtual environment: Activate the virtual environment using the appropriate command based on your operating system.
+
+4. Set up the database: In your terminal, navigate to the project's directory (where the manage.py file is located). Run the following command to apply migrations and create the database tables:
+
+*python manage.py migrate* (If the *python* command does not work, try using *python3* instead.)
+
+5. Start the development server: Run the following command to start the Django development server:
+
+*python manage.py runserver*
+
+6. Access the app: Open your web browser and visit http://localhost:8000.

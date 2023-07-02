@@ -1,120 +1,81 @@
 ## Distinctiveness and Complexity
 
-I believe my project satisfies the distinctiveness and complexity requirements, because I've tried my best to make my project versatile. This is a fitness app, where you have your own account with your personal data such as: birth date, height, weight, etc. You can change some of them, as you go further in your fitness journey. 
-The app is basically divided into three sort of "sub-sites": 
-- Profile
-  - This one containes your liked/saved recipes and exercises and your personal data
-- Recipes
-  - This one contains all of the recipes 
-- Exercises
-  - This one contains all of the exercises
+I believe my project satisfies the distinctiveness and complexity requirements because I have made efforts to create a versatile fitness app. The app allows users to create personal accounts with information such as birth date, height, weight, etc. Users can modify their data as they progress in their fitness journey. The app is divided into three main sections:
 
-Some of the arguments that in my opinion prove fulfillment of the requirements:
-- ability to like/unlike, save/unsave recipes and exercises,
-- ability to add your own recipes/exercises to database,
-- nice user experience ahcieved by using javascript in most of the cases,
-- profile, which has "double navigation" which remembers state after the reload,
-- search bar with ability to choose whether you search for exercises or recipes
-- nice, clean look overall with small animations and small changes that matters in the bigger picture, such as dynamic counts of liked/saved recipes/exercises or categories/types.
+1. Profile: This section contains liked/saved recipes and exercises, as well as personal data.
+
+2. Recipes: This section includes a collection of recipes.
+
+3. Exercises: This section contains various exercises.
+
+Some key features that demonstrate the fulfillment of requirements are:
+
+- Ability to like/unlike and save/unsave recipes and exercises.
+- Ability to add custom recipes/exercises to the database.
+- Enhanced user experience using JavaScript for interactivity.
+- The profile section has a "double navigation" feature that remembers the state after page reload.
+- A search bar with the option to search for exercises or recipes.
+- A clean and visually pleasing design with small animations and thoughtful details, such as dynamic counts of liked/saved recipes/exercises and categories/types.
 
 ## Files
 
-Now I'll present to you each of the files I've created or made changes to:
+Now, let's go through each of the files created or modified for the project:
 
-### models.py
+- `models.py`: Contains all the necessary models, including `CustomUser` which overrides `AbstractUser`, as well as `Recipe`, `LikedRecipe`, `Cookbook`, `Exercise`, `LikedExercise`, and `Training` models.
 
-In this file I've created all of my models, starting with CustomUser, in which I've added all of the necessary fields overriding AbstractUser, then Recipe model and LikedRecipe and Cookbook models that have CustomUser and Recipe as the foreign keys and of course similar with Exercise, LikedExercise and Training models.
+- `views.py`: Handles backend logic, including adding, removing, and modifying data. Also responsible for rendering templates, registration, and login functionality.
 
-### views.py
+- `fitness_app/urls.py`: Defines clear and informative URLs, utilizing both IDs and slugs for better readability.
 
-In this file it's the most going on I would say. I won't go so much to detail, but here all of the magic with the backend is happening. Removing, adding, changing, which there is a lot in this project, everything is happening here, and of course we can't forget displaying templates and register and login.
+- `scraper.py`: A Python file that utilizes BeautifulSoup and Selenium to scrape recipe data from a website. Note: Make sure to review the website's terms and policies regarding data scraping.
 
-### fitness_app/urls.py
+- `load_data.py`: Loads the data scraped by `scraper.py` into the database.
 
-Here I really wanted my urls to be as clear and informative as possible, that's why in some of them i used both ids and slugs properties and included them in the url.
+- `unslugify.py`: Contains a function to convert slugs into readable titles for use in templates.
 
-### scraper.py
+- `styles.css`: Contains the CSS code for the app.
 
-This is a python file which uses BeautifulSoup and Selenium to scrape recipes data from website. (I've checked the terms and their policy and haven't found anything about scraping data). Scraping all of the data and saving it into variables so it can be easily grouped and accessed was really a fun part of this project.
+- `categories.html`: Template displaying all recipe categories with their respective counts.
 
-### load_data.py
+- `category.html`: Template displaying all recipes within a chosen category.
 
-This file takes the data that *scraper.py* scraped and inserts it into the database.
+- `exercises.html`: Template displaying all exercises, allowing addition, liking/unliking, and saving/unsaving.
 
-### unslugify.py
+- `exercise.html`: Template displaying a selected exercise with its description.
 
-This file contains the function I've needed to unslugify the titles to use them inside the template in "normal" form.
+- `index.html`: Template representing the profile page. It includes a double navigation feature for accessing recipes, exercises, and personal data. It also dynamically updates the counts of liked/saved recipes/exercises using JavaScript.
 
-### styles.css 
+- `layout.html`: Base template containing the overall page structure, including links, logo, and libraries such as Bootstrap.
 
-In this file, there is css code that i wrpte for this app.
+- `login.html`: Template for the login page.
 
-### categories.html
+- `recipe.html`: Template displaying a selected recipe with ingredients and description.
 
-This template displays all of the recipes categories with their counts.
+- `recipes.html`: Template displaying all recipes, allowing addition, liking/unliking, and saving/unsaving.
 
-### category.html
+- `register.html`: Template for the registration page, featuring dynamic field validation.
 
-This template displays all recipes within chosen category.
+- `search.html`: Template displaying search results.
 
-### exercises.html
+- `type.html`: Template displaying all exercises within a chosen category.
 
-This template displays all exercises and ability to add another and also like/unlike save/unsave them.
+- `types.html`: Template displaying all exercise types with their respective counts.
 
-### exercise.html
+## How to Run
 
-This template displays chosen exercise with the description.
+To run the project, follow these steps:
 
-### index.html
+1. Clone the repository to your local machine.
 
-This template displays the profile page, where is the double navigation for your recipes, exercises and personal data, counts liked/saved recipes/exercises and updates itself using javascript. This template is the biggest one and took a lot of time.
+2. (Optional) Set up a virtual environment.
 
-### layout.html
+3. Activate the virtual environment.
 
-This is just a base template, the whole structure of the page and all of the links, logo, bootstrap and other libraries.
+4. Set up the database by running migrations:
+   ```
+   python manage.py migrate
+   ```
 
-### login.html
-
-This template displays a login page.
-
-### recipe.html
-
-This template displays chosen recipe with ingredients and description.
-
-### recipes.html
-
-This template displays all recipes and ability to add another and also like/unlike save/unsave them.
-
-### register.html
-
-This template displays a register page with dynamic check for correct fields.
-
-### search.html
-
-This template displays the results of searching.
-
-### type.html
-
-This template displays all exercises within chosen category.
-
-### types.html
-
-This template displays all of the exercises types with their counts.
-
-## How to run 
-
-1. Clone the repository: Open your terminal or command prompt and navigate to the directory where you want to clone the repository.
-
-2. Create a virtual environment (optional but recommended): It's a good practice to create a virtual environment to isolate the dependencies of your Django app. Navigate to the project's directory and create a virtual environment.
-
-3. Activate the virtual environment: Activate the virtual environment using the appropriate command based on your operating system.
-
-4. Set up the database: In your terminal, navigate to the project's directory (where the manage.py file is located). Run the following command to apply migrations and create the database tables:
-
-*python manage.py migrate* (If the *python* command does not work, try using *python3* instead.)
-
-5. Start the development server: Run the following command to start the Django development server:
-
-*python manage.py runserver*
-
-6. Access the app: Open your web browser and visit http://localhost:8000.
+5. Start the development server:
+   ```
+   python

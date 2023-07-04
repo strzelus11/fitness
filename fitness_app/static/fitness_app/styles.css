@@ -227,7 +227,7 @@ html {
 
 .remove-from-index-training {
 	position: absolute;
-	right: 30em;
+	right: 40em;
 	font-size: 1.5em;
 	color: green;
 	border: none;
@@ -240,7 +240,7 @@ html {
 
 .add-to-index-training {
 	position: absolute;
-	right: 30em;
+	right: 40em;
 	font-size: 1.5em;
 	color: grey;
 	border: none;
@@ -274,6 +274,10 @@ html {
 
 .exercise-margin {
 	margin: 0 3em;
+}
+
+.pl {
+    padding-left: 2em;
 }
 
 @media only screen and (max-width: 480px) {
@@ -417,4 +421,8 @@ html {
 		display: flex;
 		justify-content: flex-end;
 	}
+
+    .pl {
+        padding-left: 0;
+    }
 }

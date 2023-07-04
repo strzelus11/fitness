@@ -55,7 +55,7 @@
 				</button>
 				<div class="collapse navbar-collapse" id="navbarScroll">
 					<ul
-						class="navbar-nav me-auto my-2 my-lg-0"
+						class="navbar-nav me-auto my-2 my-lg-0 text-center"
 					>
 						<li class="nav-item">
 							<a class="nav-link" href="{% url 'index' %}">Profile</a>
@@ -66,20 +66,19 @@
                         <li class="nav-item">
 							<a class="nav-link" href="{% url 'exercises' %}">Exercises</a>
 						</li>
+                        <hr>
 						{% if user.is_authenticated %}
-						<li class="nav-item">
+						<li class="nav-item pl">
 							<a
 								class="nav-link"
-								style="padding-left: 5vw"
 								href="{% url 'logout' %}"
 								>Log Out</a
 							>
 						</li>
 						{% else %}
-						<li class="nav-item">
+						<li class="nav-item pl">
 							<a
 								class="nav-link"
-								style="padding-left: 5vw"
 								href="{% url 'login' %}"
 								>Log In</a
 							>
